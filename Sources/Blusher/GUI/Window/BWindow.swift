@@ -1,4 +1,4 @@
-public class BWindow: BSurface {
+open class BWindow: BSurface {
     public var surfaceSize: SizeI {
         get { super.size }
         set { super.size = newValue }

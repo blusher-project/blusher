@@ -16,7 +16,7 @@ public enum ResizeEdge {
     case bottomRight
 }
 
-public class BSurface {
+open class BSurface {
     private var _sbDesktopSurface: OpaquePointer? = nil
     private var _parent: BSurface? = nil
     private var _wmGeometry: RectI? = nil

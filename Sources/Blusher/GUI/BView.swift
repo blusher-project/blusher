@@ -132,6 +132,12 @@ open class BView {
         get { _textLayout }
         set {
             _textLayout = newValue
+
+            if let layout = newValue {
+                sb_view_set_glyph_layout(_sbView, layout._sbLayout)
+            } else {
+                _textLayout = nil
+            }
         }
     }
 

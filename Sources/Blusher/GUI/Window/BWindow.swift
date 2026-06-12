@@ -140,6 +140,14 @@ public class BTitleBar: BView {
         private let _titleBar: BTitleBar
         private let _image: ImageHandle
         private let _altImage: ImageHandle?
+        private var _title: String = ""
+
+        public var title: String {
+            get { _title }
+            set {
+                _title = newValue
+            }
+        }
 
         init(to action: Action, of titleBar: BTitleBar) {
             _action = action
@@ -167,7 +175,7 @@ public class BTitleBar: BView {
         }
     }
 
-    public class Caption: BView {
+    public class Icon: BView {
         init(_ titleBar: BTitleBar) {
             let rect = Rect(x: 100.0, y: 0.0, width: 100.0, height: BTitleBar.thickness)
             super.init(parent: titleBar, geometry: rect)
@@ -177,8 +185,8 @@ public class BTitleBar: BView {
 
         public override func paintEvent(_ event: Event) {
             var paint = Paint()
-            paint.strokeWidth = 2.0
-            paint.strokeColor = .black
+            paint.strokeWidth = 1.0
+            paint.strokeColor = .red
 
             self.canvas?.drawLine(
                 Point(x: 0.0, y: 10.0),
@@ -187,6 +195,17 @@ public class BTitleBar: BView {
             )
 
             super.paintEvent(event)
+        }
+    }
+
+    public class Caption: BView {
+        init(_ titleBar: BTitleBar) {
+            let rect = Rect(x: 100.0, y: 0.0, width: 100.0, height: BTitleBar.thickness)
+            super.init(parent: titleBar, geometry: rect)
+
+            self.renderType = .text
+            self.textLayout = TextLayout()
+            self.textLayout?.text = "Blusher Window"
         }
     }
 
@@ -201,6 +220,7 @@ public class BTitleBar: BView {
     private var _minimizeButton: Button!
     private var _maximizeOrRestoreButton: Button!
 
+    private var _icon: Icon!
     private var _caption: Caption!
 
     init(_ window: BWindow) {
@@ -218,6 +238,7 @@ public class BTitleBar: BView {
         _minimizeButton.position = Point(x: 40.0, y: 3.0)
         _maximizeOrRestoreButton.position = Point(x: 70.0, y: 3.0)
 
+        _icon = Icon(self)
         _caption = Caption(self)
 
         self.color = Color(r: 0.5, g: 0.5, b: 0.5, a: 1.0)

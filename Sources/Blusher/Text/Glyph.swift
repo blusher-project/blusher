@@ -11,24 +11,26 @@ public struct Glyph {
 }
 
 public class GlyphRun {
-    private var _sbGlyphRun: OpaquePointer? = nil
+    internal var _sbGlyphRun: OpaquePointer? = nil
     private var _glyphBuffer: [Glyph] = []
+    private var _font: Font!
 
     public var count: Int {
         return Int(sb_glyph_run_count(_sbGlyphRun))
     }
 
     public init(count: Int, font: Font) {
-        var sbFont = sb_font_t(path: nil, ttc_index: font.ttcIndex, size: font.size)
-        let path = "/usr/share/fonts/noto/NotoSans-Regular.ttf"
-        path.withCString { cStr in
+        _font = font
+        var sbFont = sb_font_t(path: nil, ttc_index: Int32(font.ttcIndex), size: font.size)
+
+        font.path.withCString { cStr in
             sbFont.path = cStr
         }
         // sbFont.ttc_index = 0
 
         _sbGlyphRun = sb_glyph_run_new(UInt32(count), &sbFont)
 
-        for _ in 0...count {
+        for _ in 0..<count {
             _glyphBuffer.append(Glyph(id: 0))
         }
     }

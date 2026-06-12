@@ -87,6 +87,9 @@ public class TextLayout {
             let line = TextLayout.Line()
 
             let font = FontLibrary.shared.findFont(family: "sans")
+            if font != nil {
+                print(" - font file: \(font!.path)")
+            }
             var runCount = 0
             // Count runs.
             let pangoLine: UnsafeMutablePointer<PangoLayoutLine> =
@@ -100,11 +103,11 @@ public class TextLayout {
             // Fill runs.
             it = pangoLine.pointee.runs
             while it != nil {
-                var l = UnsafeMutableRawPointer(it!).assumingMemoryBound(to: GSList.self)
-                var item = UnsafeMutableRawPointer(l.pointee.data)
+                let l = UnsafeMutableRawPointer(it!).assumingMemoryBound(to: GSList.self)
+                let item = UnsafeMutableRawPointer(l.pointee.data)
                     .assumingMemoryBound(to: PangoGlyphItem.self)
 
-                var glyphs: UnsafeMutablePointer<PangoGlyphString>? = item.pointee.glyphs
+                let glyphs: UnsafeMutablePointer<PangoGlyphString>? = item.pointee.glyphs
                 let run = GlyphRun(count: Int(glyphs!.pointee.num_glyphs), font: font!)
                 for i in 0..<Int(glyphs!.pointee.num_glyphs) {
                     let info = glyphs!.pointee.glyphs[i]

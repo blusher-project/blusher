@@ -1,4 +1,4 @@
-// swift-tools-version: 6.2
+// swift-tools-version: 6.1
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -7,7 +7,8 @@ let package = Package(
     name: "example",
     dependencies: [
         .package(
-            path: "../../blusher-brc-plugin",
+            url: "https://github.com/blusher-project/blusher-brc-plugin.git",
+            branch: "main"
         ),
     ],
     targets: [

@@ -57,8 +57,8 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            // url: "file://../blusher-brc-plugin",
-            path: "./blusher-brc-plugin",
+            url: "https://github.com/blusher-project/blusher-brc-plugin.git",
+            branch: "main"
         ),
     ],
     targets: [
@@ -66,11 +66,25 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .systemLibrary(
             name: "CSwingby",
-            path: "Sources/CSwingby",
+            path: "Sources/CSwingby"
+        ),
+        .systemLibrary(
+            name: "CFontconfig",
+            path: "Sources/CFontconfig"
+        ),
+        .systemLibrary(
+            name: "CPango",
+            path: "Sources/CPango",
+            pkgConfig: "pangoft2"
         ),
         .target(
             name: "Blusher",
-            dependencies: ["CSwingby", "BlusherResources"],
+            dependencies: [
+                "CSwingby",
+                "CFontconfig",
+                "CPango",
+                "BlusherResources",
+            ],
             swiftSettings: [
                 .unsafeFlags(["-enable-library-evolution"]),
                 .unsafeFlags(swingbyConf.includePathFlags),

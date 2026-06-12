@@ -1,0 +1,5 @@
+module CPango [system] {
+    header "CPango.h"
+    link "pango-1.0"
+    export *
+}

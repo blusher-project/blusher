@@ -15,7 +15,7 @@ struct BlusherBRCPlugin: BuildToolPlugin {
         }
         if access(cmd.path, X_OK) != 0 {
             // TODO: This will never works.
-            cmd = context.package.directoryURL.appendingPathComponent("bin/blusher")
+            cmd = URL(fileURLWithPath: "~/.blusher/bin/blusher")
         }
 
         let projectRoot = context.package.directoryURL

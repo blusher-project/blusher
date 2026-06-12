@@ -43,3 +43,11 @@ import Testing
     let decoded = bytes.decode(encoding: UTF8())
     #expect(decoded == "こんにちは！\n")
 }
+
+@Test func fontLibrary() async throws {
+    if let notoSans = FontLibrary.shared.findFont(family: "Noto Sans") {
+        #expect(notoSans.family == "Noto Sans")
+    } else {
+        return
+    }
+}

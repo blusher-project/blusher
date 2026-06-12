@@ -16,6 +16,7 @@ open class BView {
     private var _clip: Bool = false
     private var _color: Color = Color(r: 0.0, g: 0.0, b: 0.0, a: 0.0)
     private var _image: ImageHandle? = nil
+    private var _textLayout: TextLayout? = nil
     private var _geometry: Rect = Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
     private var _cursorShape: CursorShape = .default
     private var _layoutConstraint: LayoutConstraint? = nil
@@ -125,6 +126,19 @@ open class BView {
             return canvas
         }
         return nil
+    }
+
+    public var textLayout: TextLayout? {
+        get { _textLayout }
+        set {
+            _textLayout = newValue
+
+            if let layout = newValue {
+                sb_view_set_glyph_layout(_sbView, layout._sbLayout)
+            } else {
+                _textLayout = nil
+            }
+        }
     }
 
     public var geometry: Rect {

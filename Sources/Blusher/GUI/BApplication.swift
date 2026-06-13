@@ -1,5 +1,5 @@
 @_implementationOnly import Swingby
-@_implementationOnly import BlusherResources
+internal import BlusherResources
 
 public class BApplication {
     nonisolated(unsafe) public static var shared: BApplication!

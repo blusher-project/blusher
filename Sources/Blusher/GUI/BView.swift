@@ -251,6 +251,7 @@ open class BView {
             if newValue != nil {
                 _layout = newValue
                 _layout?.attach(to: self)
+                self.layingOut()
             } else {
                 _layout?.detach()
                 _layout = nil
@@ -278,6 +279,8 @@ open class BView {
         _surface.children.append(self)
         _parent = parent
         _parent?._children.append(self)
+        // For initial.
+        _parent?.layingOut()
 
         clip = true
 

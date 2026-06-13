@@ -25,8 +25,20 @@ open class BSurface {
 
     private var _resizeRequestEventListener: EventListener!
     private var _preferredScaleEventListener: EventListener!
+    private var _timeoutEventListener: EventListener!
 
     internal var _resizeRequestHandler: ((ResizeEvent) -> Void)? = nil
+    internal var _timeoutHandler: ((TimerEvent) -> Void)? = nil
+
+    public var onTimeout: EventHandler<TimerEvent>? = nil
+
+    internal var sbDesktopSurface: OpaquePointer? {
+        _sbDesktopSurface
+    }
+
+    internal var sbSurface: OpaquePointer? {
+        sb_desktop_surface_surface(_sbDesktopSurface)
+    }
 
     // TODO: Change this to internal when the test done.
     public var rootViewPointer: OpaquePointer {
@@ -248,6 +260,20 @@ open class BSurface {
             _preferredScaleEventListener,
             userData
         )
+
+        // Timeout event.
+        _timeoutEventListener = { sbEvent, userData in
+            if let userData = userData {
+                let instance = Unmanaged<BSurface>.fromOpaque(userData).takeUnretainedValue()
+
+                instance.callTimeoutEvent(sbEvent)
+            }
+        } as EventListener
+        sb_surface_add_event_listener(sb_desktop_surface_surface(_sbDesktopSurface),
+            SB_EVENT_TYPE_TIMEOUT,
+            _timeoutEventListener,
+            userData
+        )
     }
 
     private func callResizingEvent(_ sbEvent: UnsafeMutablePointer<sb_event_t>?) {
@@ -273,6 +299,14 @@ open class BSurface {
         preferredScaleEvent(event)
     }
 
+    private func callTimeoutEvent(_ sbEvent: UnsafeMutablePointer<sb_event_t>?) {
+        let id = sb_event_timer_id(sbEvent)
+        let interval = sb_event_timer_interval(sbEvent)
+        let event = TimerEvent(interval: Int(interval), repeats: false)
+        event.id = Int(id)
+        timeoutEvent(event)
+    }
+
     open func resizeRequestEvent(_ event: ResizeEvent) {
         ToplevelStorage._uiSurface = self
         _resizeRequestHandler?(event)
@@ -283,6 +317,13 @@ open class BSurface {
         ToplevelStorage._uiSurface = self
         // _preferredScaleHandler?(event)
         self.scale = event.scale
+        ToplevelStorage._uiSurface = nil
+    }
+
+    open func timeoutEvent(_ event: TimerEvent) {
+        ToplevelStorage._uiSurface = self
+        _timeoutHandler?(event)
+        self.onTimeout?.invoke(event)
         ToplevelStorage._uiSurface = nil
     }
 

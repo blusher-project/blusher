@@ -11,6 +11,7 @@ public enum EventType {
     case paint
     case resize
     case preferredScale
+    case timeout
 }
 
 typealias EventListener = @convention(c) (
@@ -79,4 +80,8 @@ public func -= <T>(_ lhs: inout EventHandler<T>?, _ rhs: EventHandler<T>.Handler
     if lhs?.handlers.count == 0 {
         lhs = nil
     }
+}
+
+public func -= <T>(_ lhs: inout EventHandler<T>?, _ rhs: @escaping (T) -> Void) {
+    //
 }

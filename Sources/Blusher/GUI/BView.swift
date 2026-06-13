@@ -39,6 +39,7 @@ open class BView {
     internal var _resizeHandler: ((ResizeEvent) -> Void)? = nil
     internal var _paintHandler: ((Event) -> Void)? = nil
 
+    public var onPointerClick: EventHandler<PointerEvent>? = nil
     public var onResize: EventHandler<ResizeEvent>? = nil
 
     internal var cPointer: OpaquePointer? {
@@ -557,6 +558,7 @@ open class BView {
     open func pointerClickEvent(_ event: PointerEvent) {
         ToplevelStorage._uiSurface = self._surface
         _pointerClickHandler?(event)
+        onPointerClick?.invoke(event)
         ToplevelStorage._uiSurface = nil
     }
 

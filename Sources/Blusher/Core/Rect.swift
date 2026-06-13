@@ -10,27 +10,23 @@ public struct Rect: Equatable {
     }
 
     public var x: Float {
-        get {
-            return position.x
-        }
+        get { position.x }
+        // set { position.x = newValue }
     }
 
     public var y: Float {
-        get {
-            return position.y
-        }
+        get { position.y }
+        // set { position.y = newValue }
     }
 
     public var width: Float {
-        get {
-            return size.width
-        }
+        get { size.width }
+        // set { size.width = newValue }
     }
 
     public var height: Float {
-        get {
-            return size.height
-        }
+        get { size.height }
+        // set { size.height = newValue }
     }
 }
 

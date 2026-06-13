@@ -42,6 +42,18 @@ public class BApplication {
         ResourceManager.shared.register(resource)
     }
 
+    public func addTimer(to surface: BSurface, interval: Int, repeats: Bool) -> Int {
+        let id = sb_application_add_timer(_sbApplication,
+            surface.sbSurface, UInt32(interval), repeats)
+
+        return Int(id)
+        // TODO: Wrap ID as struct TimerID.
+    }
+
+    public func removeTimer(for id: Int) {
+        sb_application_remove_timer(_sbApplication, UInt32(id))
+    }
+
     public func exec() -> Int {
         return Int(sb_application_exec(_sbApplication))
     }

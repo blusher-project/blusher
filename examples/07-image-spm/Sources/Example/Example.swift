@@ -13,6 +13,7 @@ public struct Program {
 
         let window = BWindow()
         window.size = SizeI(width: 500, height: 400)
+        window.body.layout = CenterLayout()
 
         let png = ResourceManager.shared.getResource("/org.blusher.Example/swingby.png")
         if png == nil {

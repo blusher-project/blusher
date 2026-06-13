@@ -23,7 +23,7 @@ struct LayoutApp: Application {
                 .onPointerEnter { event in
                     print(event)
                 }
-            CenterLayout {
+            Declarative.CenterLayout {
                 BlueRectangle()
                 Rectangle()
                     .color(.black)

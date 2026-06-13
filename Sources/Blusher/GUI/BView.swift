@@ -11,6 +11,7 @@ open class BView {
     private var _sbView: OpaquePointer?
     private var _surface: BSurface!
     private var _parent: BView?
+    private var _children: [BView] = []
 
     private var _renderType: ViewRenderType = .singleColor
     private var _clip: Bool = false
@@ -19,6 +20,7 @@ open class BView {
     private var _textLayout: TextLayout? = nil
     private var _geometry: Rect = Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
     private var _cursorShape: CursorShape = .default
+    private var _layout: (any Layout)? = nil
     private var _layoutConstraint: LayoutConstraint? = nil
 
     private var _pointerEnterEventListener: EventListener!
@@ -48,6 +50,10 @@ open class BView {
 
     public var parent: BView? {
         _parent
+    }
+
+    public var children: [BView] {
+        _children
     }
 
     public var clip: Bool {
@@ -239,6 +245,19 @@ open class BView {
         }
     }
 
+    public var layout: (any Layout)? {
+        get { _layout }
+        set {
+            if newValue != nil {
+                _layout = newValue
+                _layout?.attach(to: self)
+            } else {
+                _layout?.detach()
+                _layout = nil
+            }
+        }
+    }
+
     public var layoutConstraint: LayoutConstraint? {
         get { _layoutConstraint }
         set { _layoutConstraint = newValue }
@@ -258,6 +277,7 @@ open class BView {
         _surface = parent._surface
         _surface.children.append(self)
         _parent = parent
+        _parent?._children.append(self)
 
         clip = true
 
@@ -320,8 +340,8 @@ open class BView {
 
     internal func layingOut() {
         // Calculate the child nodes based on the layout.
-        if let layoutConstraint = layoutConstraint {
-            layoutConstraint.constraintFunction(self)
+        if let layout = _layout {
+            layout.constraintFunction()
         }
     }
 

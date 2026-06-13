@@ -1,4 +1,4 @@
-public struct CenterLayout: Layout {
+public struct FillLayout: Layout {
     private var _view: BView? = nil
 
     public init() {
@@ -13,15 +13,15 @@ public struct CenterLayout: Layout {
     }
 
     public func constraintFunction() -> Void {
-        print("constraintFunction!")
-        if _view == nil { return }
-
+        if _view == nil {
+            return
+        }
         for child in _view!.children {
             child.geometry = Rect(
-                x: (_view!.size.width - child.size.width) / 2.0,
-                y: (_view!.size.height - child.size.height) / 2.0,
-                width: child.size.width,
-                height: child.size.height
+                x: 0.0,
+                y: 0.0,
+                width: _view!.size.width,
+                height: _view!.size.height
             )
         }
     }

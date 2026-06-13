@@ -138,7 +138,7 @@ class ViewRenderer {
         }
 
         // Process layouts.
-        if let layout = view as? any Layout {
+        if let layout = view as? any Declarative.Layout {
             // Layout itself.
             let viewHandle = visit(
                 view: layout.selfContent,
@@ -146,11 +146,13 @@ class ViewRenderer {
                 parentViewHandle: parentViewHandle,
                 action: action
             )
+            /* TODO!: Implementation!!!
             viewHandle?.layoutConstraint = LayoutConstraint(
                 rootNode: viewHandle!,
                 childNodes: [],
                 constraintFunction: layout.constraintFunction
             )
+            */
 
             // Layout children.
             if let children = layout.childrenContent as? _TupleView {

@@ -1,14 +1,16 @@
-public protocol Layout: Visible {
-    associatedtype Body : View
+public protocol Layout {
+    // @ViewBuilder
+    // var body: Body { get }
 
-    @ViewBuilder
-    var body: Body { get }
+    // var selfContent: any View { get }
 
-    var selfContent: any View { get }
+    // var childrenContent: any View { get }
 
-    var childrenContent: any View { get }
+    func constraintFunction() -> Void
 
-    func constraintFunction(_: BView) -> Void
+    mutating func attach(to view: BView)
+
+    mutating func detach()
 }
 
 public struct LayoutConstraint {

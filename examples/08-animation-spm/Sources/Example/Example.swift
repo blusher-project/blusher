@@ -5,21 +5,6 @@ nonisolated(unsafe) var isRunning: Bool = false
 
 @main
 public struct Program {
-    class ToggleButton: BView {
-        private var _label: BView!
-
-        override init(parent: BView, geometry: Rect) {
-            super.init(parent: parent, geometry: geometry)
-
-            _label = BView(parent: self, geometry: Rect(x: 0.0, y: 0.0, width: 60.0, height: 50.0))
-            _label.renderType = .text
-            _label.textLayout = TextLayout()
-            _label.textLayout?.text = "Start"
-
-            self.color = Color(r: 0.5, g: 0.5, b: 0.5, a: 1.0)
-        }
-    }
-
     class Label: BView {
         //
         init(parent: BView, geometry: Rect, _ text: String) {
@@ -102,10 +87,11 @@ public struct Program {
             "EaseInOut"
         )
 
-        let toggleButton = ToggleButton(
+        let toggleButton = BButton(
             parent: view,
-            geometry: Rect(x: 100.0, y: 250.0, width: 30.0, height: 30.0)
+            "Start"
         )
+        toggleButton.geometry = Rect(x: 100.0, y: 250.0, width: 60.0, height: 30.0)
         toggleButton.onPointerClick += { event in
             if !isRunning {
                 linear.startAnimation()

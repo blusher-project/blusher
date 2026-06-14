@@ -177,6 +177,10 @@ open class BSurface {
         addEventListeners()
     }
 
+    public func update() {
+        sb_surface_update(self.sbSurface)
+    }
+
     public func close() {
         if role == .toplevel {
             sb_desktop_surface_toplevel_close(_sbDesktopSurface)

@@ -36,6 +36,7 @@ public class GlyphRun {
     }
 
     deinit {
+        // TODO: Isn't it dangerous?
         sb_glyph_run_free(_sbGlyphRun)
     }
 

@@ -12,6 +12,7 @@ public class TextLayout {
         }
 
         deinit {
+            // TODO: Isn't it dangerous?
             sb_glyph_line_free(_sbGlyphLine)
         }
 
@@ -78,11 +79,10 @@ public class TextLayout {
         pango_layout_context_changed(_pangoLayout)
 
         if _sbLayout != nil {
-            sb_glyph_layout_free(_sbLayout)
-            _sbLayout = nil
+            sb_glyph_layout_clear_lines(_sbLayout)
+            _lines = []
         }
 
-        _sbLayout = sb_glyph_layout_new()
         for i in 0..<self.lineCount() {
             let line = TextLayout.Line()
 

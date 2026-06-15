@@ -1,0 +1,5 @@
+module CSdBus [system] {
+    header "CSdBus.h"
+    link "systemd"
+    export *
+}

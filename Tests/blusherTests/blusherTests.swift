@@ -51,3 +51,14 @@ import Testing
         return
     }
 }
+
+@Test func dbusSend() async throws {
+    let conn = DBusConnection(type: .session)
+    let message = DBusMessage(type: .methodCall)
+    message.destination = "org.freedesktop.Notifications"
+    message.path = "/org/freedesktop/Notifications"
+    message.interface = "org.freedesktop.Notifications"
+
+    let reply = conn.callMethod(message, "GetServerInformation")
+    #expect(reply != nil)
+}

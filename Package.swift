@@ -77,12 +77,17 @@ let package = Package(
             path: "Sources/CPango",
             pkgConfig: "pangoft2"
         ),
+        .systemLibrary(
+            name: "CSdBus",
+            path: "Sources/CSdBus"
+        ),
         .target(
             name: "Blusher",
             dependencies: [
                 "CSwingby",
                 "CFontconfig",
                 "CPango",
+                "CSdBus",
                 "BlusherResources",
             ],
             swiftSettings: [

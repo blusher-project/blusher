@@ -169,7 +169,7 @@ open class BSurface {
         _sbDesktopSurface = sb_desktop_surface_new(sbRole)
 
         if _parent != nil {
-            // sb_desktop_surface_set_parent()
+            sb_desktop_surface_set_parent(self.sbDesktopSurface, parent!.sbDesktopSurface)
         }
 
         rootViewColor = Color(r: 0.0, g: 0.0, b: 0.0, a: 0.0)

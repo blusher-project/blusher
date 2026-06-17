@@ -204,6 +204,11 @@ open class BView {
         }
     }
 
+    public var absolutePosition: Point {
+        let sbPoint = sb_view_absolute_position(_sbView)
+        return Point(x: sbPoint.x, y: sbPoint.y)
+    }
+
     public var radius: Radius {
         get {
             // TODO: Implement!

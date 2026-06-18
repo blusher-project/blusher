@@ -543,7 +543,7 @@ open class BView {
 
     private func callResizeEvent(_ sbEvent: UnsafeMutablePointer<sb_event_t>?) {
         // TODO: Real values.
-        print("TODO: BView.resizeEvent values not set.")
+        Logger.warn("TODO: BView.resizeEvent values not set.")
         let event = ResizeEvent(
             oldSize: Size(width: 0.0, height: 0.0),
             size: Size(width: 0.0, height: 0.0)

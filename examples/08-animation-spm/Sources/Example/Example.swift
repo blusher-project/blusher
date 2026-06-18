@@ -91,12 +91,12 @@ public struct Program {
             parent: view,
             "Start"
         )
+        toggleButton.geometry = Rect(x: 100.0, y: 250.0, width: 60.0, height: 30.0)
 
         let warning = BPopup(at: toggleButton.absolutePosition, window)
         warning.size = SizeI(width: 80, height: 30)
         warning.rootViewColor = Color(r: 0.0, g: 0.0, b: 0.0, a: 1.0)
 
-        toggleButton.geometry = Rect(x: 100.0, y: 250.0, width: 60.0, height: 30.0)
         toggleButton.onPointerClick += { event in
             if !isRunning {
                 linear.startAnimation()

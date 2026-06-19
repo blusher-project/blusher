@@ -34,7 +34,7 @@ public struct Program {
 
             _label = BView(parent: self, geometry: Rect(x: 0.0, y: 0.0, width: 30.0, height: 30.0))
             _label.renderType = .text
-            _label.textLayout = TextLayout()
+            _label.textLayout = TextLayout("", FontLibrary.shared.findFont(family: "Noto Sans")!)
             _label.textLayout?.text = text
 
             self.color = Color(r: 1.0, g: 0.0, b: 0.0, a: 1.0)

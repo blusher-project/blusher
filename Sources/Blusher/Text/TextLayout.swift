@@ -28,6 +28,8 @@ public class TextLayout {
 
     private var _text: String = ""
     private var _lines: [Line] = []
+    private var _currentFont: Font!
+    private var _glyphRuns: [GlyphRun] = []
 
     internal var _sbLayout: OpaquePointer? = nil
 
@@ -44,12 +46,22 @@ public class TextLayout {
         }
     }
 
-    public init() {
+    public convenience init() {
+        let text = ""
+        let font = FontLibrary.shared.findFont(family: "Noto Sans")!
+
+        self.init(text, font)
+    }
+
+    public init(_ text: String, _ font: Font) {
         _sbLayout = sb_glyph_layout_new()
 
         _pangoFontMap = pango_ft2_font_map_new()
         _pangoContext = pango_font_map_create_context(_pangoFontMap)
         _pangoLayout = pango_layout_new(_pangoContext)
+
+        _text = text
+        _currentFont = font
     }
 
     deinit {
@@ -67,6 +79,15 @@ public class TextLayout {
         let _ = 0
     }
 
+    private func setPangoFont(_ font: Font) {
+        let desc = pango_font_description_new()
+        pango_font_description_set_family(desc, font.family)
+        pango_font_description_set_absolute_size(desc, Double(font.size) * Double(PANGO_SCALE))
+        pango_layout_set_font_description(_pangoLayout, desc)
+
+        pango_font_description_free(desc)
+    }
+
     //==================
     // Public Method
     //==================
@@ -76,6 +97,8 @@ public class TextLayout {
     }
 
     public func update() {
+        self.setPangoFont(_currentFont)
+
         pango_layout_context_changed(_pangoLayout)
 
         if _sbLayout != nil {
@@ -86,10 +109,6 @@ public class TextLayout {
         for i in 0..<self.lineCount() {
             let line = TextLayout.Line()
 
-            let font = FontLibrary.shared.findFont(family: "sans")
-            if font != nil {
-                print(" - font file: \(font!.path)")
-            }
             var runCount = 0
             // Count runs.
             let pangoLine: UnsafeMutablePointer<PangoLayoutLine> =
@@ -107,12 +126,19 @@ public class TextLayout {
                 let item = UnsafeMutableRawPointer(l.pointee.data)
                     .assumingMemoryBound(to: PangoGlyphItem.self)
 
+                let pangoFont = item.pointee.item.pointee.analysis.font
+                let pangoDesc = pango_font_describe(pangoFont)
+                print("pango family: \(String(cString: pango_font_description_get_family(pangoDesc)!))")
+
                 let glyphs: UnsafeMutablePointer<PangoGlyphString>? = item.pointee.glyphs
-                let run = GlyphRun(count: Int(glyphs!.pointee.num_glyphs), font: font!)
+                let run = GlyphRun(count: Int(glyphs!.pointee.num_glyphs), font: self._currentFont)
                 for i in 0..<Int(glyphs!.pointee.num_glyphs) {
                     let info = glyphs!.pointee.glyphs[i]
 
                     let advance: Float = Float(info.geometry.width) / Float(PANGO_SCALE)
+
+                    Logger.debug("glyph: \(info.glyph) advance: \(advance) x_offset: \(info.geometry.x_offset / PANGO_SCALE) y_offset: \(info.geometry.y_offset / PANGO_SCALE)")
+
                     run[i].id = info.glyph
                     run[i].advance = advance
                     run[i].offset.x = Float(info.geometry.x_offset) / Float(PANGO_SCALE)
@@ -123,6 +149,49 @@ public class TextLayout {
                 line.appendRun(run)
             }
             self.appendLine(line)
+        }
+    }
+}
+
+//=============
+// Pango
+//=============
+
+internal enum Pango {
+    public class Layout {
+        private var _pangoFontMap: UnsafeMutablePointer<PangoFontMap>?
+        private var _pangoContext: OpaquePointer?
+        private var _pangoLayout: OpaquePointer?
+        private var _textRuns: [(String, Font)] = []
+
+        init() {
+            _pangoFontMap = pango_ft2_font_map_new()
+            _pangoContext = pango_font_map_create_context(_pangoFontMap)
+            _pangoLayout = pango_layout_new(_pangoContext)
+        }
+
+        deinit {
+            //
+        }
+
+        public func layOut() {
+            _textRuns = []
+
+            for tr in _textRuns {
+                let desc = pango_font_description_new()
+                let font = tr.1
+                let sizeD = Double(tr.1.size)
+                pango_font_description_set_family(desc, font.family)
+                pango_font_description_set_absolute_size(desc, sizeD * Double(PANGO_SCALE))
+                pango_layout_set_font_description(_pangoLayout, desc)
+                pango_font_description_free(desc)
+
+                // pango_layout_context_changed(_pangoLayout)
+            }
+        }
+
+        public func appendText(_ text: String, _ font: Font) {
+            _textRuns.append((text, font))
         }
     }
 }

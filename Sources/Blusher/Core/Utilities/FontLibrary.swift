@@ -1,4 +1,4 @@
-@_implementationOnly import CFontconfig
+internal import CFontconfig
 
 public class FontLibrary {
     nonisolated(unsafe) public static var shared = FontLibrary()
@@ -11,7 +11,7 @@ public class FontLibrary {
         FcFini()
     }
 
-    public func findFont(family: String) -> Font? {
+    public func findFont(family: String, size: Float = 12.5) -> Font? {
         var font = Font()
 
         let pattern = FcPatternCreate()
@@ -37,13 +37,13 @@ public class FontLibrary {
         var path: UnsafeMutablePointer<FcChar8>? = nil
         var index: Int32 = 0
         var weight: Int32 = 0
-        var size = 1.0
+        var retSize = 1.0
 
         FcPatternGetString(match, FC_FAMILY, 0, &familyResult)
         FcPatternGetString(match, FC_FILE, 0, &path)
         FcPatternGetInteger(match, FC_INDEX, 0, &index)
         FcPatternGetInteger(match, FC_WEIGHT, 0, &weight)
-        FcPatternGetDouble(match, FC_PIXEL_SIZE, 0, &size)
+        FcPatternGetDouble(match, FC_PIXEL_SIZE, 0, &retSize)
 
         font.family = String(cString: familyResult!)
         font.path = String(cString: path!)

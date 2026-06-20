@@ -12,6 +12,10 @@ open class BButton: BView {
         }
     }
 
+    public convenience init(_ text: String, parent: BView) {
+        self.init(parent: parent, text)
+    }
+
     public init(parent: BView, _ text: String) {
         _text = text
         _textLayout = TextLayout()

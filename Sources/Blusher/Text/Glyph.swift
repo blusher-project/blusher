@@ -36,8 +36,8 @@ public class GlyphRun {
     }
 
     deinit {
-        // TODO: Isn't it dangerous?
-        sb_glyph_run_free(_sbGlyphRun)
+        // TODO: Isn't it dangerous? Yes!
+        // sb_glyph_run_free(_sbGlyphRun)
     }
 
     public subscript(_ index: Int) -> Glyph {

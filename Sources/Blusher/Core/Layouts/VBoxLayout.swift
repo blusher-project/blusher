@@ -7,6 +7,9 @@ public struct VBoxLayout: Layout {
         set { _spacing = newValue }
     }
 
+    public init() {
+    }
+
     public mutating func attach(to view: BView) {
         _view = view
     }

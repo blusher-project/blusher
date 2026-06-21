@@ -209,6 +209,11 @@ open class BView {
         return Point(x: sbPoint.x, y: sbPoint.y)
     }
 
+    public var isVisible: Bool {
+        get { sb_view_visible(_sbView) }
+        set { sb_view_set_visible(_sbView, newValue) }
+    }
+
     public var radius: Radius {
         get {
             // TODO: Implement!

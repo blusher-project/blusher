@@ -214,6 +214,11 @@ open class BView {
         set { sb_view_set_visible(_sbView, newValue) }
     }
 
+    public var isAntialiased: Bool {
+        get { sb_view_antialiased(_sbView) }
+        set { sb_view_set_antialiased(_sbView, newValue) }
+    }
+
     public var radius: Radius {
         get {
             // TODO: Implement!

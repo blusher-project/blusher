@@ -162,6 +162,7 @@ public class BTitleBar: BView {
 
             self.renderType = .image
             self.image = _image
+            self.isAntialiased = true;
         }
 
         public override func pointerClickEvent(_ event: PointerEvent) {

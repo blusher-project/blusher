@@ -298,6 +298,7 @@ open class BView {
         _parent?.layingOut()
 
         clip = true
+        isAntialiased = true
 
         addEventListeners()
     }
@@ -317,6 +318,7 @@ open class BView {
         _parent = nil
 
         clip = true
+        isAntialiased = true
 
         addEventListeners()
     }

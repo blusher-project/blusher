@@ -20,7 +20,7 @@ open class BSurface {
     private var _sbDesktopSurface: OpaquePointer? = nil
     private var _parent: BSurface? = nil
     private var _wmGeometry: RectI? = nil
-    private var _scale: Int = 1
+    private var _scale: Float = 1.0
     private var _visible: Bool = false
 
     private var _resizeRequestEventListener: EventListener!
@@ -144,7 +144,7 @@ open class BSurface {
         }
     }
 
-    public var scale: Int {
+    public var scale: Float {
         get {
             _scale
         }
@@ -153,7 +153,7 @@ open class BSurface {
             _scale = newValue
 
             let sbSurface = sb_desktop_surface_surface(_sbDesktopSurface)
-            sb_surface_set_scale(sbSurface, UInt32(_scale))
+            sb_surface_set_scale(sbSurface, _scale)
         }
     }
 
@@ -299,7 +299,7 @@ open class BSurface {
 
     private func callPreferredScaleEvent(_ sbEvent: UnsafeMutablePointer<sb_event_t>?) {
         let sbScale = sb_event_scale_scale(sbEvent)
-        let event = ScaleEvent(scale: Int(sbScale))
+        let event = ScaleEvent(scale: Float(sbScale))
         preferredScaleEvent(event)
     }
 

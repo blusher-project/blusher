@@ -1,7 +1,7 @@
 public class ScaleEvent: Event {
-    public var scale: Int
+    public var scale: Float
 
-    public init(scale: Int) {
+    public init(scale: Float) {
         self.scale = scale
 
         super.init(of: .preferredScale)

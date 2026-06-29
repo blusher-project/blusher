@@ -257,12 +257,16 @@ public class BTitleBar: BView {
         _icon = Icon(self)
         _caption = Caption(self)
 
-        self.color = Color(r: 0.5, g: 0.5, b: 0.5, a: 1.0)
+        self.color = Color(r256: 0xC1, g: 0xBB, b: 0xB8, a: 255)
         self.radius = Radius(topLeft: 8.0, topRight: 8.0, bottomRight: 0.0, bottomLeft: 0.0)
     }
 
     public override func pointerPressEvent(_ event: PointerEvent) {
-        _pressed = true
+        if event.button == .left {
+            _pressed = true
+        } else if event.button == .right {
+            self.surface.showWindowMenu()
+        }
     }
 
     public override func pointerMoveEvent(_ event: PointerEvent) {

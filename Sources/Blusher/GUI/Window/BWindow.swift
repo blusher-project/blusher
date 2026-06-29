@@ -114,17 +114,28 @@ open class BWindow: BSurface {
         _body = BView(surface: self, geometry: _bodyGeometry)
     }
 
+    public override func show() {
+        super.show()
+
+        super.wmGeometry = _wmGeometry
+        super.inputGeometry = _inputGeometry
+    }
+
     public override func resizeRequestEvent(_ event: ResizeEvent) {
-        self.surfaceSize = SizeI(width: UInt64(event.size.width), height: UInt64(event.size.height))
-        _shadow.size = Size(
-            width: Float(self.surfaceSize.width),
-            height: Float(self.surfaceSize.height)
+        let shadowSize = Size(
+            width: Float(event.size.width) + BWindowShadow.thickness * 2,
+            height: Float(event.size.height) + BWindowShadow.thickness * 2
         )
+        self.surfaceSize = SizeI(width: UInt64(shadowSize.width), height: UInt64(shadowSize.height))
+        _shadow.size = shadowSize
         _resize.geometry = _resizeGeometry
         _resize.updateEdges()
         _border.geometry = _borderGeometry
         _titleBar.geometry = _titleBarGeometry
         _body.geometry = _bodyGeometry
+
+        super.wmGeometry = _wmGeometry
+        super.inputGeometry = _inputGeometry
     }
 }
 
@@ -163,6 +174,10 @@ public class BTitleBar: BView {
             self.renderType = .image
             self.image = _image
             self.isAntialiased = true;
+        }
+
+        public override func pointerPressEvent(_ event: PointerEvent) {
+            event.propagation = false
         }
 
         public override func pointerClickEvent(_ event: PointerEvent) {

@@ -234,8 +234,8 @@ open class BSurface {
         }
     }
 
-    public func showWindowMenu() {
-        var pos = sb_point_i_t(x: Int64(0), y: Int64(0))
+    public func showWindowMenu(at position: PointI) {
+        var pos = sb_point_i_t(x: position.x, y: position.y)
         sb_desktop_surface_toplevel_show_window_menu(_sbDesktopSurface, &pos)
     }
 

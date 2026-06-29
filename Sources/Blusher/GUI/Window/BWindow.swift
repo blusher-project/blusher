@@ -265,7 +265,10 @@ public class BTitleBar: BView {
         if event.button == .left {
             _pressed = true
         } else if event.button == .right {
-            self.surface.showWindowMenu()
+            var pos = self.absolutePosition
+            pos.x += event.position.x
+            pos.y += event.position.y
+            self.surface.showWindowMenu(at: PointI(x: Int64(pos.x), y: Int64(pos.y)))
         }
     }
 

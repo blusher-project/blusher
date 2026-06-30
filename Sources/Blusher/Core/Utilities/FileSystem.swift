@@ -24,12 +24,33 @@ func fclose(_: OpaquePointer) -> Int32
 @_silgen_name("access")
 func access(_: UnsafePointer<CChar>, _: Int32) -> Int32
 
-
 public enum FileSystem {
-    public class File {
+    public enum FileType {
+        case regularFile
+        case directory
+        case symbolicLink
+    }
+
+    public struct FilePermission {
+        public var owner: Int = 0o0000
+        public var group: Int = 0o0000
+        public var other: Int = 0o0000
+    }
+
+    public protocol Entry {
+        var type: FileType { get }
+        var permission: FilePermission { get }
+        var path: String { get }
+    }
+
+    public class File: Entry {
         private var _filePtr: OpaquePointer? = nil
         private var _path: String = ""
         private var _mode: String = ""
+
+        public var type: FileType { .regularFile }
+        public var permission: FilePermission { FilePermission() }
+        public var path: String { _path }
 
         private init() {
         }
@@ -73,6 +94,14 @@ public enum FileSystem {
                 let _ = fclose(ptr)
             }
         }
+    }
+
+    public struct Directory: Entry {
+        private var _path: String
+
+        public var type: FileType { .directory }
+        public var permission: FilePermission { FilePermission() }
+        public var path: String { _path }
     }
 
     public static func fileExists(atPath path: String) -> Bool {

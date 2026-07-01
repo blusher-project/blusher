@@ -99,6 +99,25 @@ open class BSurface {
         }
     }
 
+    public var minimumSize: SizeI {
+        get {
+            if let sbSize = sb_desktop_surface_toplevel_minimum_size(_sbDesktopSurface) {
+                return SizeI(
+                    width: UInt64(sbSize.pointee.width),
+                    height: UInt64(sbSize.pointee.height)
+                )
+            } else {
+                return SizeI(width: 0, height: 0)
+            }
+        }
+        set {
+            var sbSize = sb_size_t(width: Float(newValue.width), height: Float(newValue.height))
+            withUnsafePointer(to: &sbSize) { ptr in
+                sb_desktop_surface_toplevel_set_minimum_size(_sbDesktopSurface, ptr)
+            }
+        }
+    }
+
     public var wmGeometry: RectI {
         get {
             // TODO: Impl.

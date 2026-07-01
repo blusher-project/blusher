@@ -119,6 +119,7 @@ open class BWindow: BSurface {
 
         super.wmGeometry = _wmGeometry
         super.inputGeometry = _inputGeometry
+        super.minimumSize = SizeI(width: 100, height: 100)
     }
 
     public override func resizeRequestEvent(_ event: ResizeEvent) {

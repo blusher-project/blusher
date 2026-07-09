@@ -1,13 +1,13 @@
-open class BWindow: BSurface {
+open class BWindow: BToplevel {
     public var surfaceSize: SizeI {
-        get { super.size }
-        set { super.size = newValue }
+        get { super.surface.size }
+        set { super.surface.size = newValue }
     }
 
-    public override var size: SizeI {
-        get { super.size }
+    public var size: SizeI {
+        get { super.surface.size }
         set {
-            super.size = newValue
+            super.surface.size = newValue
 
             _shadow.size = Size(
                 width: Float(surfaceSize.width),
@@ -86,7 +86,7 @@ open class BWindow: BSurface {
     }
 
     public init(_ parent: BWindow? = nil) {
-        super.init(role: .toplevel, parent)
+        super.init(parent: parent)
 
         // Set window shadow.
         _shadow = BWindowShadow(self)
@@ -111,14 +111,14 @@ open class BWindow: BSurface {
         _titleBar.geometry = _titleBarGeometry
 
         // Window's body.
-        _body = BView(surface: self, geometry: _bodyGeometry)
+        _body = BView(surface: super.surface, geometry: _bodyGeometry)
     }
 
     public override func show() {
         super.show()
 
         super.wmGeometry = _wmGeometry
-        super.inputGeometry = _inputGeometry
+        super.surface.inputGeometry = _inputGeometry
         super.minimumSize = SizeI(width: 100, height: 100)
     }
 
@@ -136,7 +136,7 @@ open class BWindow: BSurface {
         _body.geometry = _bodyGeometry
 
         super.wmGeometry = _wmGeometry
-        super.inputGeometry = _inputGeometry
+        super.surface.inputGeometry = _inputGeometry
     }
 }
 
@@ -243,7 +243,7 @@ public class BTitleBar: BView {
     init(_ window: BWindow) {
         _window = window
 
-        super.init(surface: window, geometry: Rect(x: 0.0, y: 0.0, width: 10.0, height: 30.0))
+        super.init(surface: window.surface, geometry: Rect(x: 0.0, y: 0.0, width: 10.0, height: 30.0))
 
         // Title bar buttons.
         _closeButton = Button(to: .close, of: self)
@@ -269,7 +269,7 @@ public class BTitleBar: BView {
             var pos = self.absolutePosition
             pos.x += event.position.x
             pos.y += event.position.y
-            self.surface.showWindowMenu(at: PointI(x: Int64(pos.x), y: Int64(pos.y)))
+            self._window.showWindowMenu(at: PointI(x: Int64(pos.x), y: Int64(pos.y)))
         }
     }
 
@@ -288,7 +288,7 @@ public class BWindowBorder: BView {
     }
 
     init(_ window: BWindow) {
-        super.init(surface: window, geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0))
+        super.init(surface: window.surface, geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0))
 
         self.color = Color(r: 0.0, g: 0.0, b: 0.0, a: 1.0)
         self.radius = Radius(all: 8.0)
@@ -345,7 +345,7 @@ public class BWindowResize: BView {
     init(_ window: BWindow) {
         self.window = window
 
-        super.init(surface: window, geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0))
+        super.init(surface: window.surface, geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0))
 
         self.color = .transparent
 
@@ -409,7 +409,7 @@ public class BWindowShadow: BView {
     private var _shadowInner: BView!
 
     init(_ window: BWindow) {
-        super.init(surface: window, geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0))
+        super.init(surface: window.surface, geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0))
 
         _shadowInner = BView(
             parent: self,

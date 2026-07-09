@@ -70,22 +70,28 @@ public struct ToplevelSurface<Content: Visible>: Surface {
 }
 
 public struct SurfaceProxy {
-    private weak var uiSurface: BSurface?
+    private weak var uiSurface: BDesktopSurface?
 
-    init(_ uiSurface: BSurface) {
+    init(_ uiSurface: BDesktopSurface) {
         self.uiSurface = uiSurface
     }
 
     public func close() {
-        self.uiSurface?.close()
+        if let toplevel = self.uiSurface as? BToplevel {
+            toplevel.close()
+        }
     }
 
     public func startMove() {
-        self.uiSurface?.move()
+        if let toplevel = self.uiSurface as? BToplevel {
+            toplevel.move()
+        }
     }
 
     public func startResize(_ edge: ResizeEdge) {
-        self.uiSurface?.resize(edge)
+        if let toplevel = self.uiSurface as? BToplevel {
+            toplevel.resize(edge)
+        }
     }
 }
 

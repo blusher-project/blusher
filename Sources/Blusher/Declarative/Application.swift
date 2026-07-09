@@ -2,7 +2,7 @@
 class SurfaceManager {
     static let shared: SurfaceManager = SurfaceManager()
 
-    private var _surfaces: [BSurface] = []
+    private var _surfaces: [BDesktopSurface] = []
     private var _viewRenderer: ViewRenderer!
 
     internal var rootSurface: any Surface = EmptySurface()
@@ -56,26 +56,26 @@ class SurfaceManager {
     private func initialize(surface: any Surface, store: PropertyStore) {
         visit(surface: surface, store: store) { surface, store in
             // TODO: Do Not hard-code the role as toplevel.
-            let surfaceHandle = BSurface(role: .toplevel)
+            let surfaceHandle = BDesktopSurface(role: .toplevel)
 
-            surfaceHandle.size = store[SizeIKey.self]
+            surfaceHandle.surface.size = store[SizeIKey.self]
             if let wmGeometry = store[WMGeometryKey.self] {
                 surfaceHandle.wmGeometry = wmGeometry
             }
             if let inputGeometry = store[InputGeometryKey.self] {
-                surfaceHandle.inputGeometry = inputGeometry
+                surfaceHandle.surface.inputGeometry = inputGeometry
             }
             if let handler = store[ResizeRequestKey.self] {
                 surfaceHandle._resizeRequestHandler = handler
             }
 
-            _viewRenderer = ViewRenderer(uiSurface: surfaceHandle, view: surface.body as! any View)
+            _viewRenderer = ViewRenderer(uiSurface: surfaceHandle.surface, view: surface.body as! any View)
             let _ = SurfaceManager.renderViews(surface.body as! any View, _viewRenderer)
 
             _surfaces.append(surfaceHandle)
             surfaceHandle.show()
 
-            return surfaceHandle
+            return surfaceHandle.surface
         }
         _viewRenderer.stateBounded = true
     }
@@ -85,12 +85,12 @@ class SurfaceManager {
         visit(surface: rootSurface, store: store) { surface, store in
             let surfaceHandle = _surfaces[0]
 
-            surfaceHandle.size = store[SizeIKey.self]
+            surfaceHandle.surface.size = store[SizeIKey.self]
             if let wmGeometry = store[WMGeometryKey.self] {
                 surfaceHandle.wmGeometry = wmGeometry
             }
             if let inputGeometry = store[InputGeometryKey.self] {
-                surfaceHandle.inputGeometry = inputGeometry
+                surfaceHandle.surface.inputGeometry = inputGeometry
             }
 
             if let rootView = surface.body as? any View {
@@ -98,7 +98,7 @@ class SurfaceManager {
                 _viewRenderer.updateHandler()
             }
 
-            return surfaceHandle
+            return surfaceHandle.surface
         }
     }
 

@@ -1,9 +1,12 @@
 import Blusher
 
-let app = ApplicationHandle(CommandLine.arguments)
+let app = BApplication(CommandLine.arguments)
 
-let surface = SurfaceHandle(role: .toplevel)
+let toplevel = BToplevel()
 
-surface.show()
+let view = BView(surface: toplevel.surface, geometry: Rect(x: 0, y: 0, width: 100, height: 100))
+view.color = .red
+
+toplevel.show()
 
 app.exec()

@@ -44,7 +44,7 @@ public class BApplication {
 
     public func addTimer(to surface: BSurface, interval: Int, repeats: Bool) -> Int {
         let id = sb_application_add_timer(_sbApplication,
-            surface.sbSurface, UInt32(interval), repeats)
+            surface.cPointer, UInt32(interval), repeats)
 
         return Int(id)
         // TODO: Wrap ID as struct TimerID.

@@ -21,10 +21,20 @@ open class BWindow: BToplevel {
         }
     }
 
+    public var frameSize: SizeI {
+        get {
+            SizeI(
+                width: UInt64(_borderGeometry.width),
+                height: UInt64(_borderGeometry.height)
+            )
+        }
+    }
+
     private var _shadow: BWindowShadow!
     private var _resize: BWindowResize!
     private var _border: BWindowBorder!
     private var _titleBar: BTitleBar!
+    private var _menuBar: BMenuBar? = nil
     private var _body: BView!
 
     public var body: BView {
@@ -76,13 +86,29 @@ open class BWindow: BToplevel {
         )
     }
 
-    private var _bodyGeometry: Rect {
+    private var _menuBarGeometry: Rect {
         Rect(
+            x: _titleBarGeometry.x,
+            y: _titleBarGeometry.y + BTitleBar.thickness,
+            width: _bodyGeometry.size.width,
+            height: 24.0
+        )
+    }
+
+    private var _bodyGeometry: Rect {
+        var rect = Rect(
             x: BWindowShadow.thickness,
             y: BWindowShadow.thickness + BTitleBar.thickness,
             width: Float(surfaceSize.width) - (WindowShadow.thickness * 2),
             height: Float(surfaceSize.height) - (WindowShadow.thickness * 2) - BTitleBar.thickness
         )
+
+        if let _ = _menuBar {
+            rect.position.y += 24.0
+            rect.size.height -= 24.0
+        }
+
+        return rect
     }
 
     public init(_ parent: BWindow? = nil) {
@@ -122,6 +148,10 @@ open class BWindow: BToplevel {
         super.minimumSize = SizeI(width: 100, height: 100)
     }
 
+    internal func setMenuBar(_ menuBar: BMenuBar) {
+        _menuBar = menuBar
+    }
+
     public override func resizeRequestEvent(_ event: ResizeEvent) {
         let shadowSize = Size(
             width: Float(event.size.width) + BWindowShadow.thickness * 2,
@@ -133,6 +163,7 @@ open class BWindow: BToplevel {
         _resize.updateEdges()
         _border.geometry = _borderGeometry
         _titleBar.geometry = _titleBarGeometry
+        _menuBar?.geometry = _menuBarGeometry
         _body.geometry = _bodyGeometry
 
         super.wmGeometry = _wmGeometry

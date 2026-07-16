@@ -12,6 +12,10 @@ public class BApplication {
 
     public var rebuildReady: Bool = false
 
+    public var wlDisplay: OpaquePointer {
+        sb_application_wl_display(_sbApplication)
+    }
+
     public init(_ args: [String]) {
         let argc = Int32(args.count)
         let cArgs: [UnsafeMutablePointer<CChar>?] = args.map {
@@ -56,6 +60,14 @@ public class BApplication {
 
     public func exec() -> Int {
         return Int(sb_application_exec(_sbApplication))
+    }
+
+    public func getRegistryExtension(
+        _ listener: OpaquePointer,
+        _ userData: UnsafeMutableRawPointer?
+    ) -> OpaquePointer {
+        sb_application_get_registry_extension(_sbApplication,
+            listener, userData)
     }
 
     private func addEventListeners() {

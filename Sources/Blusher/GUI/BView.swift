@@ -323,6 +323,10 @@ open class BView {
         addEventListeners()
     }
 
+    deinit {
+        sb_view_free(self.cPointer)
+    }
+
     public func addFilter(_ filter: Filter) {
         let sbFilterType = switch filter.type {
             case .blur:
@@ -356,6 +360,15 @@ open class BView {
 
             sb_view_add_filter(_sbView, sbFilter)
         }
+    }
+
+    public func removeChild(_ child: BView) -> BView? {
+        sb_view_remove_child(_sbView, child.cPointer)
+        if let index = _children.firstIndex(where: { $0 === child }) {
+            let removed = _children.remove(at: index)
+            return removed
+        }
+        return nil
     }
 
     internal func layingOut() {

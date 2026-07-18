@@ -6,14 +6,17 @@ func colorToSbColor(_ color: Color) -> sb_color_t {
     return sb_color_t
 }
 
-func paintToSbPaint(_ paint: Paint) -> sb_paint_t {
-    let sbPaint = sb_paint_t(
-        fill_color: colorToSbColor(paint.fillColor),
-        stroke_color: colorToSbColor(paint.strokeColor),
-        stroke_width: paint.strokeWidth
-    )
+func paintToSbPaint(_ paint: Paint) -> OpaquePointer {
+    var fillColor = colorToSbColor(paint.fillColor)
+    var strokeColor = colorToSbColor(paint.strokeColor)
+    let strokeWidth = paint.strokeWidth
 
-    return sbPaint
+    let sbPaint = sb_paint_new()
+    sb_paint_set_fill_color(sbPaint, &fillColor)
+    sb_paint_set_stroke_color(sbPaint, &strokeColor)
+    sb_paint_set_stroke_width(sbPaint, strokeWidth)
+
+    return sbPaint!
 }
 
 public class Canvas {
@@ -28,20 +31,24 @@ public class Canvas {
             position: sb_point_t(x: rect.x, y: rect.y),
             size: sb_size_t(width: rect.width, height: rect.height)
         )
-        var sbPaint = paintToSbPaint(paint)
+        let sbPaint = paintToSbPaint(paint)
 
         if let sbCanvas = _sbCanvas {
-            sb_canvas_draw_rect(sbCanvas, &sbRect, &sbPaint)
+            sb_canvas_draw_rect(sbCanvas, &sbRect, sbPaint)
         }
+
+        sb_paint_free(sbPaint)
     }
 
     public func drawLine(_ p1: Point, _ p2: Point, _ paint: Paint) {
         if let sbCanvas = _sbCanvas {
             var sbP1 = sb_point_t(x: p1.x, y: p1.y)
             var sbP2 = sb_point_t(x: p2.x, y: p2.y)
-            var sbPaint = paintToSbPaint(paint)
+            let sbPaint = paintToSbPaint(paint)
 
-            sb_canvas_draw_line(sbCanvas, &sbP1, &sbP2, &sbPaint)
+            sb_canvas_draw_line(sbCanvas, &sbP1, &sbP2, sbPaint)
+
+            sb_paint_free(sbPaint)
         }
     }
 

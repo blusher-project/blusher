@@ -17,6 +17,7 @@ open class BWindow: BToplevel {
             _resize.updateEdges()
             _border.geometry = _borderGeometry
             _titleBar.geometry = _titleBarGeometry
+            _menuBar?.geometry = _menuBarGeometry
             _body.geometry = _bodyGeometry
         }
     }

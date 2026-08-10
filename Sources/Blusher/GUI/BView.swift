@@ -99,16 +99,12 @@ open class BView {
 
             _color = newValue
 
-            var sbColor = sb_color_t(
+            sb_view_set_color(_sbView, sb_color_t(
                 r: newValue.r,
                 g: newValue.g,
                 b: newValue.b,
                 a: newValue.a
-            )
-
-            withUnsafePointer(to: &sbColor) { ptr in
-                sb_view_set_color(_sbView, ptr)
-            }
+            ))
         }
     }
 
@@ -150,13 +146,7 @@ open class BView {
 
     public var geometry: Rect {
         get {
-            let sbRect = sb_view_geometry(_sbView)
-            let x = sbRect!.pointee.position.x
-            let y = sbRect!.pointee.position.y
-            let width = sbRect!.pointee.size.width
-            let height = sbRect!.pointee.size.height
-
-            return Rect(x: x, y: y, width: width, height: height)
+            return _geometry
         }
         set {
             if _geometry == newValue {
@@ -165,14 +155,14 @@ open class BView {
 
             _geometry = newValue
 
-            var sbRect = sb_rect_t(
-                position: sb_point_t(x: newValue.position.x, y: newValue.position.y),
-                size: sb_size_t(width: newValue.size.width, height: newValue.size.height)
-            )
-
-            withUnsafePointer(to: &sbRect) { ptr in
-                sb_view_set_geometry(_sbView, ptr)
-            }
+            sb_view_set_geometry(_sbView, sb_rect_t(
+                position: sb_point_t(
+                    x: Float(newValue.position.x), y: Float(newValue.position.y)
+                ),
+                size: sb_size_t(
+                    width: Float(newValue.size.width), height: Float(newValue.size.height)
+                )
+            ))
 
             layingOut()
         }
@@ -206,7 +196,7 @@ open class BView {
 
     public var absolutePosition: Point {
         let sbPoint = sb_view_absolute_position(_sbView)
-        return Point(x: sbPoint.x, y: sbPoint.y)
+        return Point(x: Double(sbPoint.x), y: Double(sbPoint.y))
     }
 
     public var isVisible: Bool {
@@ -281,15 +271,14 @@ open class BView {
 
     public init(parent: BView, geometry: Rect) {
         let sbParent = parent._sbView
-        var sbRect = sb_rect_t(
-            position: sb_point_t(x: geometry.x, y: geometry.y),
-            size: sb_size_t(width: geometry.width, height: geometry.height)
+        let sbRect = sb_rect_t(
+            position: sb_point_t(x: Float(geometry.x), y: Float(geometry.y)),
+            size: sb_size_t(width: Float(geometry.width), height: Float(geometry.height))
         )
 
-        withUnsafePointer(to: &sbRect) { ptr in
-            _sbView = sb_view_new(sbParent, ptr)
-        }
+        _sbView = sb_view_new(sbParent, sbRect)
 
+        _geometry = geometry
         _surface = parent._surface
         _surface.children.append(self)
         _parent = parent
@@ -304,15 +293,14 @@ open class BView {
     }
 
     public init(surface: BSurface, geometry: Rect) {
-        var sbRect = sb_rect_t(
-            position: sb_point_t(x: geometry.x, y: geometry.y),
-            size: sb_size_t(width: geometry.width, height: geometry.height)
+        let sbRect = sb_rect_t(
+            position: sb_point_t(x: Float(geometry.x), y: Float(geometry.y)),
+            size: sb_size_t(width: Float(geometry.width), height: Float(geometry.height))
         )
 
-        withUnsafePointer(to: &sbRect) { ptr in
-            _sbView = sb_view_new(surface.rootViewPointer, ptr)
-        }
+        _sbView = sb_view_new(surface.rootViewPointer, sbRect)
 
+        _geometry = geometry
         _surface = surface
         _surface.children.append(self)
         _parent = nil
@@ -342,7 +330,7 @@ open class BView {
 
             sb_view_add_filter(_sbView, sbFilter)
         } else if let dropShadow = filter as? DropShadow {
-            var offset = sb_point_t(x: dropShadow.offset.x, y: dropShadow.offset.y)
+            var offset = sb_point_t(x: Float(dropShadow.offset.x), y: Float(dropShadow.offset.y))
             var color = sb_color_t(
                 r: dropShadow.color.r,
                 g: dropShadow.color.g,
@@ -475,8 +463,8 @@ open class BView {
         let x = sb_point_x(sbPos)
         let y = sb_point_y(sbPos)
         let event = PointerEvent(type: .pointerEnter)
-        event.position.x = x
-        event.position.y = y
+        event.position.x = Double(x)
+        event.position.y = Double(y)
         pointerEnterEvent(event)
     }
 
@@ -485,8 +473,8 @@ open class BView {
         let x = sb_point_x(sbPos)
         let y = sb_point_y(sbPos)
         let event = PointerEvent(type: .pointerLeave)
-        event.position.x = x
-        event.position.y = y
+        event.position.x = Double(x)
+        event.position.y = Double(y)
         pointerLeaveEvent(event)
     }
 
@@ -495,8 +483,8 @@ open class BView {
         let x = sb_point_x(sbPos)
         let y = sb_point_y(sbPos)
         let event = PointerEvent(type: .pointerMove)
-        event.position.x = x
-        event.position.y = y
+        event.position.x = Double(x)
+        event.position.y = Double(y)
         pointerMoveEvent(event)
     }
 
@@ -516,8 +504,8 @@ open class BView {
 
         let event = PointerEvent(type: .pointerPress)
         event.button = button
-        event.position.x = x
-        event.position.y = y
+        event.position.x = Double(x)
+        event.position.y = Double(y)
         event.swingbyEvent = sbEvent
         pointerPressEvent(event)
     }
@@ -538,8 +526,8 @@ open class BView {
 
         let event = PointerEvent(type: .pointerRelease)
         event.button = button
-        event.position.x = x
-        event.position.y = y
+        event.position.x = Double(x)
+        event.position.y = Double(y)
         event.swingbyEvent = sbEvent
         pointerReleaseEvent(event)
     }
@@ -560,8 +548,8 @@ open class BView {
 
         let event = PointerEvent(type: .pointerClick)
         event.button = button
-        event.position.x = x
-        event.position.y = y
+        event.position.x = Double(x)
+        event.position.y = Double(y)
         event.swingbyEvent = sbEvent
         pointerClickEvent(event)
     }
@@ -571,8 +559,12 @@ open class BView {
         let sbOld = sb_event_resize_old_size(sbEvent)!
         let sbSize = sb_event_resize_size(sbEvent)!
         let event = ResizeEvent(
-            oldSize: Size(width: sbOld.pointee.width, height: sbOld.pointee.height),
-            size: Size(width: sbSize.pointee.width, height: sbSize.pointee.height)
+            oldSize: Size(
+                width: Double(sbOld.pointee.width), height: Double(sbOld.pointee.height)
+            ),
+            size: Size(
+                width: Double(sbSize.pointee.width), height: Double(sbSize.pointee.height)
+            )
         )
         resizeEvent(event)
     }

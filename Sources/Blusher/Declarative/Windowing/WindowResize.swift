@@ -29,7 +29,7 @@ struct WindowResizeEdge: View {
 public struct WindowResize: View, WindowDecoration {
     @Binding var size: Size
 
-    public static var thickness: Float {
+    public static var thickness: Double {
         get { 8.0 }
         set { return }
     }

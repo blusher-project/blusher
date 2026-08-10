@@ -20,7 +20,7 @@ public class GeometryAnimation: PropertyAnimation<Rect> {
         )
     }
 
-    public override func setProperty(_ t: Float) {
+    public override func setProperty(_ t: Double) {
         if super.state == .running {
             super.target.geometry = Rect(
                 x: Self.lerp(last.x, to.x, t),

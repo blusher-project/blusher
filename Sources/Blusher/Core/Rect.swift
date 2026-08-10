@@ -2,29 +2,29 @@ public struct Rect: Equatable {
     public var position: Point = Point(x: 0.0, y: 0.0)
     public var size: Size = Size(width: 0.0, height: 0.0)
 
-    public init(x: Float, y: Float, width: Float, height: Float) {
+    public init(x: Double, y: Double, width: Double, height: Double) {
         position.x = x
         position.y = y
         size.width = width
         size.height = height
     }
 
-    public var x: Float {
+    public var x: Double {
         get { position.x }
         // set { position.x = newValue }
     }
 
-    public var y: Float {
+    public var y: Double {
         get { position.y }
         // set { position.y = newValue }
     }
 
-    public var width: Float {
+    public var width: Double {
         get { size.width }
         // set { size.width = newValue }
     }
 
-    public var height: Float {
+    public var height: Double {
         get { size.height }
         // set { size.height = newValue }
     }
@@ -40,7 +40,7 @@ public struct RectI: Equatable {
     public var position: PointI = PointI(x: 0, y: 0)
     public var size: SizeI = SizeI(width: 0, height: 0)
 
-    public init(x: Int64, y: Int64, width: UInt64, height: UInt64) {
+    public init(x: Int, y: Int, width: Int, height: Int) {
         position.x = x
         position.y = y
         size.width = width

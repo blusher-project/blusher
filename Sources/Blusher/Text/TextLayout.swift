@@ -9,10 +9,12 @@ public class TextLayout {
         public var baseline: Point {
             get {
                 let b = sb_glyph_line_baseline(_sbGlyphLine)
-                return Point(x: b?.pointee.x ?? 0.0, y: b?.pointee.y ?? 0.0)
+                let x = b?.pointee.x ?? 0.0
+                let y = b?.pointee.y ?? 0.0
+                return Point(x: Double(x), y: Double(y))
             }
             set {
-                var b = sb_point_t(x: newValue.x, y: newValue.y)
+                var b = sb_point_t(x: Float(newValue.x), y: Float(newValue.y))
                 sb_glyph_line_set_baseline(_sbGlyphLine, &b)
             }
         }
@@ -176,14 +178,14 @@ public class TextLayout {
 
                     run[i].id = info.glyph
                     run[i].advance = advance
-                    run[i].offset.x = Float(info.geometry.x_offset) / Pango.scaleF
-                    run[i].offset.y = Float(info.geometry.y_offset) / Pango.scaleF
+                    run[i].offset.x = Double(info.geometry.x_offset) / Pango.scaleD
+                    run[i].offset.y = Double(info.geometry.y_offset) / Pango.scaleD
                 }
                 it = it?.pointee.next
 
                 line.appendRun(run)
             }
-            line.baseline = Point(x: 0.0, y: totalY)
+            line.baseline = Point(x: 0.0, y: Double(totalY))
             // line.baseline = Point(x: 0.0, y: metrics.ascent + metrics.descent + metrics.leading)
             totalY += metrics.ascent + metrics.descent + metrics.leading
             self.appendLine(line)
@@ -289,12 +291,12 @@ internal enum Pango {
             pango_layout_get_cursor_pos(_pangoLayout, Int32(index), &prStrong, &prWeak)
 
             let strong = Rect(
-                x: Float(prStrong.x), y: Float(prStrong.y),
-                width: Float(prStrong.width), height: Float(prStrong.height)
+                x: Double(prStrong.x), y: Double(prStrong.y),
+                width: Double(prStrong.width), height: Double(prStrong.height)
             )
             let weak = Rect(
-                x: Float(prWeak.x), y: Float(prWeak.y),
-                width: Float(prWeak.width), height: Float(prWeak.height)
+                x: Double(prWeak.x), y: Double(prWeak.y),
+                width: Double(prWeak.width), height: Double(prWeak.height)
             )
             let cursorPosition = CursorPosition(strong: strong, weak: weak)
             return cursorPosition

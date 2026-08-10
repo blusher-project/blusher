@@ -1,5 +1,5 @@
 public struct WindowBorder: View, WindowDecoration {
-    public static var thickness: Float {
+    public static var thickness: Double {
         get { 1.0 }
         set { return }
     }

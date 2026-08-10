@@ -1,18 +1,18 @@
 public struct Size: Equatable {
-    public var width: Float
-    public var height: Float
+    public var width: Double
+    public var height: Double
 
-    public init(width: Float, height: Float) {
+    public init(width: Double, height: Double) {
         self.width = width
         self.height = height
     }
 }
 
 public struct SizeI: Equatable {
-    public var width: UInt64
-    public var height: UInt64
+    public var width: Int
+    public var height: Int
 
-    public init(width: UInt64, height: UInt64) {
+    public init(width: Int, height: Int) {
         self.width = width
         self.height = height
     }

@@ -18,6 +18,7 @@ public enum ResizeEdge {
 open class BSurface {
     private var _sbSurface: OpaquePointer
     private var _role: (any RoleSurface)? = nil
+    private var _size: SizeI = SizeI(width: 10, height: 10)
     private var _scale: Float = 1.0
 
     private var _preferredScaleEventListener: EventListener!
@@ -47,38 +48,31 @@ open class BSurface {
             // TODO: Impl.
             return Color(r: 1.0, g: 1.0, b: 1.0, a: 1.0)
         }
-        set(newValue) {
-            var sbColor = sb_color_t(
+        set {
+            let sbColor = sb_color_t(
                 r: newValue.r,
                 g: newValue.g,
                 b: newValue.b,
                 a: newValue.a
             )
 
-            withUnsafePointer(to: &sbColor) { ptr in
-                sb_view_set_color(rootViewPointer, ptr)
-            }
+            sb_view_set_color(rootViewPointer, sbColor)
         }
     }
 
     public var size: SizeI {
         get {
-            let sbSize = UnsafeMutablePointer(mutating: sb_surface_size(_sbSurface))
-
-            let width: Float = sb_size_width(sbSize)
-            let height: Float = sb_size_height(sbSize)
-
-            return SizeI(width: UInt64(width), height: UInt64(height))
+            return _size
         }
         set {
-            var sbSize = sb_size_t(
-                width: Float(newValue.width),
-                height: Float(newValue.height)
+            _size = newValue
+
+            let sbSize = sb_size_i_t(
+                width: Int32(newValue.width),
+                height: Int32(newValue.height)
             )
 
-            withUnsafePointer(to: &sbSize) { ptr in
-                sb_surface_set_size(_sbSurface, ptr)
-            }
+            sb_surface_set_size(_sbSurface, sbSize)
         }
     }
 
@@ -88,16 +82,14 @@ open class BSurface {
             return RectI(x: 0, y: 0, width: 0, height: 0)
         }
         set {
-            var sbRect = sb_rect_t(
+            let sbRect = sb_rect_t(
                 position: sb_point_t(
                     x: Float(newValue.position.x), y: Float(newValue.position.y)
                 ),
                 size: sb_size_t(width: Float(newValue.size.width), height: Float(newValue.size.height))
             )
 
-            withUnsafeMutablePointer(to: &sbRect) { ptr in
-                sb_surface_set_input_geometry(_sbSurface, ptr)
-            }
+            sb_surface_set_input_geometry(_sbSurface, sbRect)
         }
     }
 

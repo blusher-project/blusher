@@ -51,7 +51,7 @@ public struct TitleBarButton: View {
 }
 
 public struct TitleBar: View, WindowDecoration {
-    public static var thickness: Float {
+    public static var thickness: Double {
         get { 30.0 }
         set { return }
     }

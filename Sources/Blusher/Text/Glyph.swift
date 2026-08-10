@@ -51,8 +51,8 @@ public class GlyphRun {
                 let cGlyph = cGlyphs + index
                 cGlyph.pointee.id = newValue.id
                 cGlyph.pointee.advance = newValue.advance
-                cGlyph.pointee.offset.x = newValue.offset.x
-                cGlyph.pointee.offset.y = newValue.offset.y
+                cGlyph.pointee.offset.x = Float(newValue.offset.x)
+                cGlyph.pointee.offset.y = Float(newValue.offset.y)
             }
         }
     }

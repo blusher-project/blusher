@@ -1,5 +1,5 @@
 public protocol WindowDecoration {
-    static var thickness: Float {
+    static var thickness: Double {
         get set
     }
 }

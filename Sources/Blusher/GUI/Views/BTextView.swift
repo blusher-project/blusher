@@ -22,7 +22,7 @@ public class BTextView: BView {
         get { super.geometry }
         set {
             super.geometry = newValue
-            self.textLayout?.width = newValue.width
+            self.textLayout?.width = Float(newValue.width)
         }
     }
 
@@ -35,7 +35,7 @@ public class BTextView: BView {
         get { super.size }
         set {
             super.size = newValue
-            self.textLayout?.width = newValue.width * Float(super.surface.scale)
+            self.textLayout?.width = Float(newValue.width) * Float(super.surface.scale)
         }
     }
 

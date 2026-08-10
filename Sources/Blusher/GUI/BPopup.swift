@@ -18,7 +18,7 @@ open class BPopup: BDesktopSurface {
 
     public init(at position: Point, _ parent: BDesktopSurface) {
         super.init(role: .popup)
-        var sbPoint = sb_point_t(x: position.x, y: position.y)
+        var sbPoint = sb_point_t(x: Float(position.x), y: Float(position.y))
         sb_desktop_surface_popup_set_position(super.cPointer, &sbPoint)
     }
 

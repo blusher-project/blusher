@@ -1,5 +1,5 @@
 public struct WindowShadow: View, WindowDecoration {
-    public static var thickness: Float {
+    public static var thickness: Double {
         get { 40.0 }
         set { return }
     }

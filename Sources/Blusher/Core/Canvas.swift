@@ -28,8 +28,8 @@ public class Canvas {
 
     public func drawRect(_ rect: Rect, _ paint: Paint) {
         var sbRect = sb_rect_t(
-            position: sb_point_t(x: rect.x, y: rect.y),
-            size: sb_size_t(width: rect.width, height: rect.height)
+            position: sb_point_t(x: Float(rect.x), y: Float(rect.y)),
+            size: sb_size_t(width: Float(rect.width), height: Float(rect.height))
         )
         let sbPaint = paintToSbPaint(paint)
 
@@ -42,8 +42,8 @@ public class Canvas {
 
     public func drawLine(_ p1: Point, _ p2: Point, _ paint: Paint) {
         if let sbCanvas = _sbCanvas {
-            var sbP1 = sb_point_t(x: p1.x, y: p1.y)
-            var sbP2 = sb_point_t(x: p2.x, y: p2.y)
+            var sbP1 = sb_point_t(x: Float(p1.x), y: Float(p1.y))
+            var sbP2 = sb_point_t(x: Float(p2.x), y: Float(p2.y))
             let sbPaint = paintToSbPaint(paint)
 
             sb_canvas_draw_line(sbCanvas, &sbP1, &sbP2, sbPaint)
@@ -52,7 +52,7 @@ public class Canvas {
         }
     }
 
-    public func drawLine(_ x1: Float, _ y1: Float, _ x2: Float, _ y2: Float, _ paint: Paint) {
+    public func drawLine(_ x1: Double, _ y1: Double, _ x2: Double, _ y2: Double, _ paint: Paint) {
         self.drawLine(Point(x: x1, y: y1), Point(x: x2, y: y2), paint)
     }
 }

@@ -32,6 +32,7 @@ open class BDesktopSurface: RoleSurface {
             if _wmGeometry == newValue { return }
 
             _wmGeometry = newValue
+            print("wmGeometry: \(newValue)")
 
             if _visible {
                 var sbRect = sb_rect_t(
@@ -107,12 +108,12 @@ open class BDesktopSurface: RoleSurface {
         let sbSize = sb_event_resize_size(sbEvent)
 
         let oldSize = Size(
-            width: sb_size_width(UnsafeMutablePointer(mutating: sbOldSize)),
-            height: sb_size_height(UnsafeMutablePointer(mutating: sbOldSize))
+            width: Double(sbOldSize?.pointee.width ?? 0.0),
+            height: Double(sbOldSize?.pointee.height ?? 0.0)
         )
         let size = Size(
-            width: sb_size_width(UnsafeMutablePointer(mutating: sbSize)),
-            height: sb_size_height(UnsafeMutablePointer(mutating: sbSize))
+            width: Double(sbSize?.pointee.width ?? 0.0),
+            height: Double(sbSize?.pointee.height ?? 0.0)
         )
 
         let event = ResizeEvent(oldSize: oldSize, size: size)

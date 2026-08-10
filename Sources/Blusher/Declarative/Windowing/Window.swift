@@ -14,8 +14,8 @@ public struct Window<Content: View>: Surface {
         Rect(
             x: WindowShadow.thickness - WindowResize.thickness,
             y: WindowShadow.thickness - WindowResize.thickness,
-            width: Float(surfaceSize.width) - (WindowShadow.thickness * 2) + (WindowResize.thickness * 2),
-            height: Float(surfaceSize.height) - (WindowShadow.thickness * 2) + (WindowResize.thickness * 2)
+            width: Double(surfaceSize.width) - (WindowShadow.thickness * 2) + (WindowResize.thickness * 2),
+            height: Double(surfaceSize.height) - (WindowShadow.thickness * 2) + (WindowResize.thickness * 2)
         )
     }
 
@@ -41,25 +41,25 @@ public struct Window<Content: View>: Surface {
         Rect(
             x: WindowShadow.thickness,
             y: WindowShadow.thickness + TitleBar.thickness,
-            width: Float(surfaceSize.width) - (WindowShadow.thickness * 2),
-            height: Float(surfaceSize.height) - (WindowShadow.thickness * 2) - TitleBar.thickness
+            width: Double(surfaceSize.width) - (WindowShadow.thickness * 2),
+            height: Double(surfaceSize.height) - (WindowShadow.thickness * 2) - TitleBar.thickness
         )
     }
 
     var wmGeometry: RectI {
-        let x = Int64(borderGeometry.x)
-        let y = Int64(borderGeometry.y)
-        let width = UInt64(borderGeometry.width)
-        let height = UInt64(borderGeometry.height)
+        let x = Int(borderGeometry.x)
+        let y = Int(borderGeometry.y)
+        let width = Int(borderGeometry.width)
+        let height = Int(borderGeometry.height)
 
         return RectI(x: x, y: y, width: width, height: height)
     }
 
     var inputGeometry: RectI {
-        let x = Int64(resizeGeometry.x)
-        let y = Int64(resizeGeometry.y)
-        let width = UInt64(resizeGeometry.width)
-        let height = UInt64(resizeGeometry.height)
+        let x = Int(resizeGeometry.x)
+        let y = Int(resizeGeometry.y)
+        let width = Int(resizeGeometry.width)
+        let height = Int(resizeGeometry.height)
 
         return RectI(x: x, y: y, width: width, height: height)
     }
@@ -80,7 +80,7 @@ public struct Window<Content: View>: Surface {
                     Rect(
                         // TODO: The values are not accurate.
                         x: WindowShadow.thickness, y: WindowShadow.thickness,
-                        width: Float(borderGeometry.width), height: Float(borderGeometry.height)
+                        width: borderGeometry.width, height: borderGeometry.height
                     )
                 )
                 .filters([
@@ -108,8 +108,8 @@ public struct Window<Content: View>: Surface {
             let offsetHeight = surfaceSize.height - wmGeometry.size.height
 
             surfaceSize = SizeI(
-                width: UInt64(event.size.width) + offsetWidth,
-                height: UInt64(event.size.height) + offsetHeight
+                width: Int(event.size.width) + offsetWidth,
+                height: Int(event.size.height) + offsetHeight
             )
 
             updateResizeGeometry()

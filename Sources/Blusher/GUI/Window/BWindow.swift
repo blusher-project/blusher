@@ -10,8 +10,8 @@ open class BWindow: BToplevel {
             super.surface.size = newValue
 
             _shadow.size = Size(
-                width: Float(surfaceSize.width),
-                height: Float(surfaceSize.height)
+                width: Double(surfaceSize.width),
+                height: Double(surfaceSize.height)
             )
             _resize.geometry = _resizeGeometry
             _resize.updateEdges()
@@ -25,8 +25,8 @@ open class BWindow: BToplevel {
     public var frameSize: SizeI {
         get {
             SizeI(
-                width: UInt64(_borderGeometry.width),
-                height: UInt64(_borderGeometry.height)
+                width: Int(_borderGeometry.width),
+                height: Int(_borderGeometry.height)
             )
         }
     }
@@ -43,19 +43,19 @@ open class BWindow: BToplevel {
     }
 
     private var _wmGeometry: RectI {
-        let x = Int64(_borderGeometry.x)
-        let y = Int64(_borderGeometry.y)
-        let width = UInt64(_borderGeometry.width)
-        let height = UInt64(_borderGeometry.height)
+        let x = Int(_borderGeometry.x)
+        let y = Int(_borderGeometry.y)
+        let width = Int(_borderGeometry.width)
+        let height = Int(_borderGeometry.height)
 
         return RectI(x: x, y: y, width: width, height: height)
     }
 
     private var _inputGeometry: RectI {
-        let x = Int64(_resizeGeometry.x)
-        let y = Int64(_resizeGeometry.y)
-        let width = UInt64(_resizeGeometry.width)
-        let height = UInt64(_resizeGeometry.height)
+        let x = Int(_resizeGeometry.x)
+        let y = Int(_resizeGeometry.y)
+        let width = Int(_resizeGeometry.width)
+        let height = Int(_resizeGeometry.height)
 
         return RectI(x: x, y: y, width: width, height: height)
     }
@@ -64,8 +64,8 @@ open class BWindow: BToplevel {
         Rect(
             x: BWindowShadow.thickness - BWindowResize.thickness,
             y: BWindowShadow.thickness - BWindowResize.thickness,
-            width: Float(surfaceSize.width) - (BWindowShadow.thickness * 2) + (BWindowResize.thickness * 2),
-            height: Float(surfaceSize.height) - (BWindowShadow.thickness * 2) + (BWindowResize.thickness * 2)
+            width: Double(surfaceSize.width) - (BWindowShadow.thickness * 2) + (BWindowResize.thickness * 2),
+            height: Double(surfaceSize.height) - (BWindowShadow.thickness * 2) + (BWindowResize.thickness * 2)
         )
     }
 
@@ -100,8 +100,8 @@ open class BWindow: BToplevel {
         var rect = Rect(
             x: BWindowShadow.thickness,
             y: BWindowShadow.thickness + BTitleBar.thickness,
-            width: Float(surfaceSize.width) - (WindowShadow.thickness * 2),
-            height: Float(surfaceSize.height) - (WindowShadow.thickness * 2) - BTitleBar.thickness
+            width: Double(surfaceSize.width) - (WindowShadow.thickness * 2),
+            height: Double(surfaceSize.height) - (WindowShadow.thickness * 2) - BTitleBar.thickness
         )
 
         if let _ = _menuBar {
@@ -120,8 +120,8 @@ open class BWindow: BToplevel {
         _shadow.geometry = Rect(
             x: 0.0,
             y: 0.0,
-            width: Float(self.surfaceSize.width),
-            height: Float(self.surfaceSize.height)
+            width: Double(self.surfaceSize.width),
+            height: Double(self.surfaceSize.height)
         )
 
         // Set window resize area.
@@ -155,10 +155,10 @@ open class BWindow: BToplevel {
 
     public override func resizeRequestEvent(_ event: ResizeEvent) {
         let shadowSize = Size(
-            width: Float(event.size.width) + BWindowShadow.thickness * 2,
-            height: Float(event.size.height) + BWindowShadow.thickness * 2
+            width: event.size.width + BWindowShadow.thickness * 2,
+            height: event.size.height + BWindowShadow.thickness * 2
         )
-        self.surfaceSize = SizeI(width: UInt64(shadowSize.width), height: UInt64(shadowSize.height))
+        self.surfaceSize = SizeI(width: Int(shadowSize.width), height: Int(shadowSize.height))
         _shadow.size = shadowSize
         _resize.geometry = _resizeGeometry
         _resize.updateEdges()
@@ -206,7 +206,7 @@ public class BTitleBar: BView {
 
             self.renderType = .image
             self.image = _image
-            self.isAntialiased = true;
+            self.isAntialiased = true
         }
 
         public override func pointerPressEvent(_ event: PointerEvent) {
@@ -258,7 +258,7 @@ public class BTitleBar: BView {
         }
     }
 
-    public static var thickness: Float {
+    public static var thickness: Double {
         30.0
     }
 
@@ -301,7 +301,7 @@ public class BTitleBar: BView {
             var pos = self.absolutePosition
             pos.x += event.position.x
             pos.y += event.position.y
-            self._window.showWindowMenu(at: PointI(x: Int64(pos.x), y: Int64(pos.y)))
+            self._window.showWindowMenu(at: PointI(x: Int(pos.x), y: Int(pos.y)))
         }
     }
 
@@ -314,7 +314,7 @@ public class BTitleBar: BView {
 }
 
 public class BWindowBorder: BView {
-    public static var thickness: Float {
+    public static var thickness: Double {
         get { 1.0 }
         set { return }
     }
@@ -369,7 +369,7 @@ public class BWindowResize: BView {
     private var _bottomLeft: Edge!
     private var _left: Edge!
 
-    public static var thickness: Float {
+    public static var thickness: Double {
         get { 14.0 }
         set { return }
     }
@@ -395,7 +395,7 @@ public class BWindowResize: BView {
     }
 
     public func updateEdges() {
-        let thick: Float = Self.thickness
+        let thick: Double = Self.thickness
 
         _topLeft.geometry = Rect(
             x: 0.0, y: 0.0,
@@ -433,7 +433,7 @@ public class BWindowResize: BView {
 }
 
 public class BWindowShadow: BView {
-    public static var thickness: Float {
+    public static var thickness: Double {
         get { 40.0 }
         set { return }
     }
@@ -447,16 +447,16 @@ public class BWindowShadow: BView {
             parent: self,
             geometry: Rect(
                 x: 20.0, y: 20.0,
-                width: Float(window.surfaceSize.width) - 40.0,
-                height: Float(window.surfaceSize.height) - 40.0
+                width: Double(window.surfaceSize.width) - 40.0,
+                height: Double(window.surfaceSize.height) - 40.0
             )
         )
         _shadowInner.color = Color(r: 0.0, g: 0.0, b: 0.0, a: 0.5)
         _shadowInner.addFilter(Blur(radius: 5.0))
         self.onResize += { [weak self] event in
             self?._shadowInner.size = Size(
-                width: Float(window.surfaceSize.width) - 40.0,
-                height: Float(window.surfaceSize.height) - 40.0
+                width: Double(window.surfaceSize.width) - 40.0,
+                height: Double(window.surfaceSize.height) - 40.0
             )
         }
 

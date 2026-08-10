@@ -7,8 +7,8 @@ open class BToplevel: BDesktopSurface {
         get {
             if let sbSize = sb_desktop_surface_toplevel_minimum_size(super.cPointer) {
                 return SizeI(
-                    width: UInt64(sbSize.pointee.width),
-                    height: UInt64(sbSize.pointee.height)
+                    width: Int(sbSize.pointee.width),
+                    height: Int(sbSize.pointee.height)
                 )
             } else {
                 return SizeI(width: 0, height: 0)
@@ -52,7 +52,7 @@ open class BToplevel: BDesktopSurface {
     }
 
     public func showWindowMenu(at position: PointI) {
-        var pos = sb_point_i_t(x: position.x, y: position.y)
+        var pos = sb_point_i_t(x: Int32(position.x), y: Int32(position.y))
         sb_desktop_surface_toplevel_show_window_menu(super.cPointer, &pos)
     }
 }

@@ -147,7 +147,7 @@ public class PropertyAnimation<T>: Animation {
             self.elapsed = self.delta
         }
 
-        let t = self.easing.evaluate(Float(self.elapsed) / Float(self.delta))
+        let t = self.easing.evaluate(Double(self.elapsed) / Double(self.delta))
 
         print("Elapsed: \(self.elapsed), Delta: \(self.delta), t: \(t)")
 
@@ -175,7 +175,7 @@ public class PropertyAnimation<T>: Animation {
             self.elapsed = self.delta
         }
 
-        let t = self.easing.evaluate(Float(self.elapsed) / Float(self.delta))
+        let t = self.easing.evaluate(Double(self.elapsed) / Double(self.delta))
 
         print("Elapsed: \(self.elapsed), Delta: \(self.delta), t: \(t)")
 
@@ -192,7 +192,7 @@ public class PropertyAnimation<T>: Animation {
         }
     }
 
-    internal func setProperty(_ t: Float) {
+    internal func setProperty(_ t: Double) {
         //
     }
 
@@ -214,7 +214,7 @@ public class PropertyAnimation<T>: Animation {
         }
     }
 
-    public static func lerp(_ a: Float, _ b: Float, _ t: Float) -> Float
+    public static func lerp(_ a: Double, _ b: Double, _ t: Double) -> Double
     {
         return a + (b - a) * t
     }

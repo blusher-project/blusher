@@ -13,12 +13,7 @@ open class BWindow: BToplevel {
                 width: Double(surfaceSize.width),
                 height: Double(surfaceSize.height)
             )
-            _resize.geometry = _resizeGeometry
-            _resize.updateEdges()
-            _border.geometry = _borderGeometry
-            _titleBar.geometry = _titleBarGeometry
-            _menuBar?.geometry = _menuBarGeometry
-            _body.geometry = _bodyGeometry
+            self.updateGeometries()
         }
     }
 
@@ -141,16 +136,26 @@ open class BWindow: BToplevel {
         _body = BView(surface: super.surface, geometry: _bodyGeometry)
     }
 
+    internal func setMenuBar(_ menuBar: BMenuBar) {
+        _menuBar = menuBar
+        self.updateGeometries()
+    }
+
+    private func updateGeometries() {
+        _resize.geometry = _resizeGeometry
+        _resize.updateEdges()
+        _border.geometry = _borderGeometry
+        _titleBar.geometry = _titleBarGeometry
+        _menuBar?.geometry = _menuBarGeometry
+        _body.geometry = _bodyGeometry
+    }
+
     public override func show() {
         super.show()
 
         super.wmGeometry = _wmGeometry
         super.surface.inputGeometry = _inputGeometry
         super.minimumSize = SizeI(width: 100, height: 100)
-    }
-
-    internal func setMenuBar(_ menuBar: BMenuBar) {
-        _menuBar = menuBar
     }
 
     public override func resizeRequestEvent(_ event: ResizeEvent) {
@@ -160,12 +165,7 @@ open class BWindow: BToplevel {
         )
         self.surfaceSize = SizeI(width: Int(shadowSize.width), height: Int(shadowSize.height))
         _shadow.size = shadowSize
-        _resize.geometry = _resizeGeometry
-        _resize.updateEdges()
-        _border.geometry = _borderGeometry
-        _titleBar.geometry = _titleBarGeometry
-        _menuBar?.geometry = _menuBarGeometry
-        _body.geometry = _bodyGeometry
+        self.updateGeometries()
 
         super.wmGeometry = _wmGeometry
         super.surface.inputGeometry = _inputGeometry

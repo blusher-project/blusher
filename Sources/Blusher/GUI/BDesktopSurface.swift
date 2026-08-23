@@ -12,6 +12,7 @@ open class BDesktopSurface: RoleSurface {
     private var _visible: Bool = false
 
     private var _resizeRequestEventListener: EventListener!
+    private var _stateChangeEventListener: EventListener!
 
     internal var _resizeRequestHandler: ((ResizeEvent) -> Void)? = nil
 
@@ -101,6 +102,20 @@ open class BDesktopSurface: RoleSurface {
             _resizeRequestEventListener,
             userData
         )
+
+        // State change event.
+        _stateChangeEventListener = { sbEvent, userData in
+            if let userData = userData {
+                let instance = Unmanaged<BDesktopSurface>.fromOpaque(userData).takeUnretainedValue()
+
+                instance.callStateChangeEvent(sbEvent)
+            }
+        } as EventListener
+        sb_desktop_surface_add_event_listener(_sbDesktopSurface,
+            SB_EVENT_TYPE_STATE_CHANGE,
+            _stateChangeEventListener,
+            userData
+        )
     }
 
     private func callResizeRequestEvent(_ sbEvent: UnsafeMutablePointer<sb_event_t>?) {
@@ -120,9 +135,28 @@ open class BDesktopSurface: RoleSurface {
         resizeRequestEvent(event)
     }
 
+    private func callStateChangeEvent(_ sbEvent: UnsafeMutablePointer<sb_event_t>?) {
+        let sbState = UInt32(sb_event_state_change_state(sbEvent))
+        let state: ToplevelState = switch sbState {
+        case SB_DESKTOP_SURFACE_TOPLEVEL_STATE_MAXIMIZED.rawValue: .maximized
+        default: .activated
+        }
+        let sbSize = sb_event_state_change_size(sbEvent)
+        let event = StateChangeEvent(
+            state: state,
+            on: true,
+            SizeI(width: Int(sbSize.width), height: Int(sbSize.height))
+        )
+        stateChangeEvent(event)
+    }
+
     open func resizeRequestEvent(_ event: ResizeEvent) {
         // ToplevelStorage._uiSurface = self
         _resizeRequestHandler?(event)
         // ToplevelStorage._uiSurface = nil
+    }
+
+    open func stateChangeEvent(_ event: StateChangeEvent) {
+        //
     }
 }

@@ -32,12 +32,17 @@ open class BWindow: BToplevel {
     private var _titleBar: BTitleBar!
     private var _menuBar: BMenuBar? = nil
     private var _body: BView!
+    private var _noDecoration: Bool = false
 
     public var body: BView {
         return _body
     }
 
     private var _wmGeometry: RectI {
+        if self.noDecoration {
+            return RectI(x: 0, y: 0, width: surfaceSize.width, height: surfaceSize.height)
+        }
+
         let x = Int(_borderGeometry.x)
         let y = Int(_borderGeometry.y)
         let width = Int(_borderGeometry.width)
@@ -47,6 +52,10 @@ open class BWindow: BToplevel {
     }
 
     private var _inputGeometry: RectI {
+        if self.noDecoration {
+            return RectI(x: 0, y: 0, width: surfaceSize.width, height: surfaceSize.height)
+        }
+
         let x = Int(_resizeGeometry.x)
         let y = Int(_resizeGeometry.y)
         let width = Int(_resizeGeometry.width)
@@ -56,11 +65,14 @@ open class BWindow: BToplevel {
     }
 
     private var _resizeGeometry: Rect {
-        Rect(
-            x: BWindowShadow.thickness - BWindowResize.thickness,
-            y: BWindowShadow.thickness - BWindowResize.thickness,
-            width: Double(surfaceSize.width) - (BWindowShadow.thickness * 2) + (BWindowResize.thickness * 2),
-            height: Double(surfaceSize.height) - (BWindowShadow.thickness * 2) + (BWindowResize.thickness * 2)
+        let shadowThickness = !noDecoration ? BWindowShadow.thickness : 0.0
+        let resizeThickness = !noDecoration ? BWindowResize.thickness : 0.0
+
+        return Rect(
+            x: shadowThickness - resizeThickness,
+            y: shadowThickness - resizeThickness,
+            width: Double(surfaceSize.width) - (shadowThickness * 2) + (resizeThickness * 2),
+            height: Double(surfaceSize.height) - (shadowThickness * 2) + (resizeThickness * 2)
         )
     }
 
@@ -74,9 +86,11 @@ open class BWindow: BToplevel {
     }
 
     private var _titleBarGeometry: Rect {
-        Rect(
-            x: BWindowShadow.thickness,
-            y: BWindowShadow.thickness,
+        let shadowThickness = !self.noDecoration ? BWindowShadow.thickness : 0.0
+
+        return Rect(
+            x: shadowThickness,
+            y: shadowThickness,
             width: _bodyGeometry.size.width,
             height: BTitleBar.thickness
         )
@@ -92,11 +106,13 @@ open class BWindow: BToplevel {
     }
 
     private var _bodyGeometry: Rect {
+        let shadowThickness = !self.noDecoration ? BWindowShadow.thickness : 0.0
+
         var rect = Rect(
-            x: BWindowShadow.thickness,
-            y: BWindowShadow.thickness + BTitleBar.thickness,
-            width: Double(surfaceSize.width) - (WindowShadow.thickness * 2),
-            height: Double(surfaceSize.height) - (WindowShadow.thickness * 2) - BTitleBar.thickness
+            x: shadowThickness,
+            y: shadowThickness + BTitleBar.thickness,
+            width: Double(surfaceSize.width) - (shadowThickness * 2),
+            height: Double(surfaceSize.height) - (shadowThickness * 2) - BTitleBar.thickness
         )
 
         if let _ = _menuBar {
@@ -105,6 +121,18 @@ open class BWindow: BToplevel {
         }
 
         return rect
+    }
+
+    private var noDecoration: Bool {
+        get { _noDecoration }
+        set {
+            _noDecoration = newValue
+            if _noDecoration == true {
+                _shadow.isVisible = false
+            } else {
+                _shadow.isVisible = true
+            }
+        }
     }
 
     public init(_ parent: BWindow? = nil) {
@@ -142,6 +170,9 @@ open class BWindow: BToplevel {
     }
 
     private func updateGeometries() {
+        super.wmGeometry = _wmGeometry
+        super.surface.inputGeometry = _inputGeometry
+
         _resize.geometry = _resizeGeometry
         _resize.updateEdges()
         _border.geometry = _borderGeometry
@@ -169,6 +200,21 @@ open class BWindow: BToplevel {
 
         super.wmGeometry = _wmGeometry
         super.surface.inputGeometry = _inputGeometry
+    }
+
+    public override func stateChangeEvent(_ event: StateChangeEvent) {
+        let state = event.state
+        let on = event.isOn
+        let size = event.size
+
+        if state == .maximized && on == true {
+            self.noDecoration = true
+            self.surfaceSize = size
+            updateGeometries()
+        } else if state == .maximized && on == false {
+            self.noDecoration = false
+            updateGeometries()
+        }
     }
 }
 
@@ -217,8 +263,9 @@ public class BTitleBar: BView {
             if event.button == .left {
                 switch _action {
                 case .close: _titleBar._window.close()
-                case .minimize: _titleBar._window.close()   // TODO: Implementation.
-                case .maximizeOrRestore: _titleBar._window.close()  // TODO: Implementation.
+                case .minimize: _titleBar._window.minimize()
+                case .maximizeOrRestore:
+                    _titleBar._window.maximize()
                 }
             }
         }

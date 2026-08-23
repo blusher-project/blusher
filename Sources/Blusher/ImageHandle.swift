@@ -5,20 +5,14 @@ public class ImageHandle {
 
     public var width: Int {
         let sbSizeI = sb_image_size(_sbImage)
-        let width = sb_size_i_width(
-            UnsafeMutablePointer.init(mutating: sbSizeI)
-        )
 
-        return Int(width)
+        return Int(sbSizeI.width)
     }
 
     public var height: Int {
         let sbSizeI = sb_image_size(_sbImage)
-        let height = sb_size_i_height(
-            UnsafeMutablePointer.init(mutating: sbSizeI)
-        )
 
-        return Int(height)
+        return Int(sbSizeI.height)
     }
 
     public init(from data: Bytes) {

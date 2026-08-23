@@ -12,6 +12,7 @@ public enum EventType {
     case resize
     case preferredScale
     case timeout
+    case stateChange
 }
 
 typealias EventListener = @convention(c) (

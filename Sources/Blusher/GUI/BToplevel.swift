@@ -1,5 +1,12 @@
 @_implementationOnly import Swingby
 
+public enum ToplevelState {
+    case maximized
+    case fullscreen
+    case resizing
+    case activated
+}
+
 open class BToplevel: BDesktopSurface {
     private var _parent: BToplevel? = nil
 
@@ -29,11 +36,23 @@ open class BToplevel: BDesktopSurface {
     }
 
     public func close() {
-        sb_desktop_surface_toplevel_close(cPointer)
+        sb_desktop_surface_toplevel_close(super.cPointer)
+    }
+
+    public func minimize() {
+        sb_desktop_surface_toplevel_set_minimized(super.cPointer)
+    }
+
+    public func maximize() {
+        sb_desktop_surface_toplevel_set_maximized(super.cPointer)
+    }
+
+    public func restore() {
+        sb_desktop_surface_toplevel_unset_maximized(super.cPointer)
     }
 
     public func move() {
-        sb_desktop_surface_toplevel_move(cPointer)
+        sb_desktop_surface_toplevel_move(super.cPointer)
     }
 
     public func resize(_ resizeEdge: ResizeEdge) {

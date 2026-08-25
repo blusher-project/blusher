@@ -169,6 +169,13 @@ open class BWindow: BToplevel {
         self.updateGeometries()
     }
 
+    private func calculateShadowSize(_ size: Size) -> Size {
+        return Size(
+            width: size.width + WindowShadow.thickness * 2,
+            height: size.height + WindowShadow.thickness * 2
+        )
+    }
+
     private func updateGeometries() {
         super.wmGeometry = _wmGeometry
         super.surface.inputGeometry = _inputGeometry
@@ -213,6 +220,14 @@ open class BWindow: BToplevel {
             updateGeometries()
         } else if state == .maximized && on == false {
             self.noDecoration = false
+            _shadow.size = calculateShadowSize(Size(
+                width: Double(size.width),
+                height: Double(size.height)
+            ))
+            self.surfaceSize = SizeI(
+                width: Int(_shadow.size.width),
+                height: Int(_shadow.size.height)
+            )
             updateGeometries()
         }
     }

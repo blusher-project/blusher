@@ -142,9 +142,10 @@ open class BDesktopSurface: RoleSurface {
         default: .activated
         }
         let sbSize = sb_event_state_change_size(sbEvent)
+        let sbValue = sb_event_state_change_value(sbEvent)
         let event = StateChangeEvent(
             state: state,
-            on: true,
+            on: sbValue,
             SizeI(width: Int(sbSize.width), height: Int(sbSize.height))
         )
         stateChangeEvent(event)

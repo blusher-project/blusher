@@ -33,7 +33,6 @@ open class BDesktopSurface: RoleSurface {
             if _wmGeometry == newValue { return }
 
             _wmGeometry = newValue
-            print("wmGeometry: \(newValue)")
 
             if _visible {
                 var sbRect = sb_rect_t(

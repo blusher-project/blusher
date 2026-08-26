@@ -45,8 +45,8 @@ open class BWindow: BToplevel {
 
         let x = Int(_borderGeometry.x)
         let y = Int(_borderGeometry.y)
-        let width = Int(_borderGeometry.width)
-        let height = Int(_borderGeometry.height)
+        let width = Int(_borderGeometry.width - BWindowBorder.thickness * 2)
+        let height = Int(_borderGeometry.height - BWindowBorder.thickness * 2)
 
         return RectI(x: x, y: y, width: width, height: height)
     }

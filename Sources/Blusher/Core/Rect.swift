@@ -47,3 +47,9 @@ public struct RectI: Equatable {
         size.height = height
     }
 }
+
+extension RectI: CustomStringConvertible {
+    public var description: String {
+        return "Blusher.RectI(\(position.x), \(position.y) \(size.width)x\(size.height))"
+    }
+}

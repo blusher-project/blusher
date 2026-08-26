@@ -35,7 +35,7 @@ public struct Program {
             textArea.geometry = geometry
             textView.geometry = geometry
 
-            print(textView.textLayout?.width)
+            // print(textView.textLayout?.width)
         }
 
         // Button panel.

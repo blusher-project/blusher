@@ -82,12 +82,23 @@ let package = Package(
             path: "Sources/CSdBus"
         ),
         .target(
+            name: "CYoga",
+            linkerSettings: [
+                .unsafeFlags([
+                    "-Ithird_party/yoga/yoga",
+                    "-Lthird_party/yoga/build"
+                ]),
+                .linkedLibrary("yogacore"),
+            ]
+        ),
+        .target(
             name: "Blusher",
             dependencies: [
                 "CSwingby",
                 "CFontconfig",
                 "CPango",
                 "CSdBus",
+                "CYoga",
                 "BlusherResources",
             ],
             swiftSettings: [

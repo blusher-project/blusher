@@ -55,6 +55,9 @@ public struct Program {
             parent: window.body,
             geometry: Rect(x: 0.0, y: 0.0, width: 340.0, height: 400.0)
         )
+        var flexbox = FlexboxLayout()
+        flexbox.flexDirection = .column
+        view.layout = flexbox
 
         let linear = AnimatedBox(
             parent: view,
@@ -94,8 +97,8 @@ public struct Program {
         toggleButton.geometry = Rect(x: 100.0, y: 250.0, width: 60.0, height: 30.0)
 
         let warning = BPopup(at: toggleButton.absolutePosition, window)
-        warning.size = SizeI(width: 80, height: 30)
-        warning.rootViewColor = Color(r: 0.0, g: 0.0, b: 0.0, a: 1.0)
+        warning.surface.size = SizeI(width: 80, height: 30)
+        warning.surface.rootViewColor = Color(r: 0.0, g: 0.0, b: 0.0, a: 1.0)
 
         toggleButton.onPointerClick += { event in
             if !isRunning {

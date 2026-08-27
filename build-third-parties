@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd third_party/yoga
+mkdir -p build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../yoga
+make -j`nproc`

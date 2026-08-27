@@ -77,11 +77,13 @@ open class BWindow: BToplevel {
     }
 
     private var _borderGeometry: Rect {
-        Rect(
+        return Rect(
             x: _resizeGeometry.x + BWindowResize.thickness - BWindowBorder.thickness,
             y: _resizeGeometry.y + BWindowResize.thickness - BWindowBorder.thickness,
-            width: _resizeGeometry.width - (BWindowResize.thickness * 2) + (BWindowBorder.thickness * 2),
-            height: _resizeGeometry.height - (BWindowResize.thickness * 2) + (BWindowBorder.thickness * 2)
+            width: _resizeGeometry.width
+                - (BWindowResize.thickness * 2) + (BWindowBorder.thickness * 2),
+            height: _resizeGeometry.height
+                - (BWindowResize.thickness * 2) + (BWindowBorder.thickness * 2)
         )
     }
 

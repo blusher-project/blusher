@@ -11,9 +11,22 @@ public struct FlexboxLayout: Layout {
         case rtl
     }
 
+    public enum JustifyContent {
+        case normal
+        case center
+        case spaceBetween
+    }
+
+    public enum AlignItems {
+        case normal
+        case center
+    }
+
     private var _view: BView? = nil
     private var _spacing: Double = 0.0
     private var _flexDirection: FlexDirection = .column
+    private var _justifyContent: JustifyContent = .normal
+    private var _alignItems: AlignItems = .normal
 
     public var spacing: Double {
         get { _spacing }
@@ -23,6 +36,16 @@ public struct FlexboxLayout: Layout {
     public var flexDirection: FlexDirection {
         get { _flexDirection }
         set { _flexDirection = newValue }
+    }
+
+    public var justifyContent: JustifyContent {
+        get { _justifyContent }
+        set { _justifyContent = newValue }
+    }
+
+    public var alignItems: AlignItems {
+        get { _alignItems }
+        set { _alignItems = newValue }
     }
 
     public init() {
@@ -46,6 +69,24 @@ public struct FlexboxLayout: Layout {
         YGNodeStyleSetFlexDirection(ygRoot,
             (_flexDirection == .column) ? YGFlexDirectionColumn : YGFlexDirectionRow)
 
+        // Justify content.
+        switch self.justifyContent {
+        case .normal:
+            break
+        case .center:
+            YGNodeStyleSetJustifyContent(ygRoot, YGJustifyCenter)
+        case .spaceBetween:
+            YGNodeStyleSetJustifyContent(ygRoot, YGJustifySpaceBetween)
+        }
+
+        // Align items.
+        switch self.alignItems {
+        case .normal:
+            break
+        case .center:
+            YGNodeStyleSetAlignItems(ygRoot, YGAlignCenter)
+        }
+
         var nodes: [YGNodeRef] = []
         for i in 0..<view.children.count {
             let child = view.children[i]
@@ -56,7 +97,9 @@ public struct FlexboxLayout: Layout {
             YGNodeInsertChild(ygRoot, node, i)
             nodes.append(node!)
         }
-        YGNodeCalculateLayout(ygRoot, 0.0, 0.0, YGDirectionLTR)
+        YGNodeCalculateLayout(ygRoot,
+            Float(view.geometry.width), Float(view.geometry.height),
+            YGDirectionLTR)
 
         for i in 0..<nodes.count {
             let child = view.children[i]
@@ -68,8 +111,8 @@ public struct FlexboxLayout: Layout {
             let height = YGNodeLayoutGetHeight(node)
 
             child.geometry = Rect(
-                x: (_flexDirection == .row) ? child.geometry.x : Double(x),
-                y: (_flexDirection == .column) ? child.geometry.y : Double(y),
+                x: Double(x),
+                y: Double(y),
                 width: Double(width),
                 height: Double(height)
             )

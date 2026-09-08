@@ -46,6 +46,22 @@ public struct RectI: Equatable {
         size.width = width
         size.height = height
     }
+
+    public var x: Int {
+        position.x
+    }
+
+    public var y: Int {
+        position.y
+    }
+
+    public var width: Int {
+        size.width
+    }
+
+    public var height: Int {
+        size.height
+    }
 }
 
 extension RectI: CustomStringConvertible {

@@ -35,11 +35,15 @@ open class BDesktopSurface: RoleSurface {
             _wmGeometry = newValue
 
             if _visible {
-                var sbRect = sb_rect_i_t(
+                let sbRect = sb_rect_i_t(
                     position: sb_point_i_t(
-                        x: Int32(newValue.position.x), y: Int32(newValue.position.y)
+                        x: Int32(newValue.position.x),
+                        y: Int32(newValue.position.y)
                     ),
-                    size: sb_size_i_t(width: Int32(newValue.size.width), height: Int32(newValue.size.height))
+                    size: sb_size_i_t(
+                        width: Int32(newValue.size.width),
+                        height: Int32(newValue.size.height)
+                    )
                 )
 
                 sb_desktop_surface_set_wm_geometry(_sbDesktopSurface, sbRect)
@@ -66,7 +70,7 @@ open class BDesktopSurface: RoleSurface {
 
         // wmGeometry must set after .show() called.
         if _visible && _wmGeometry != nil {
-            var sbRect = sb_rect_i_t(
+            let sbRect = sb_rect_i_t(
                 position: sb_point_i_t(
                     x: Int32(_wmGeometry!.position.x),
                     y: Int32(_wmGeometry!.position.y)

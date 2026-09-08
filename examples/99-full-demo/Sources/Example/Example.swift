@@ -25,6 +25,13 @@ public struct Program {
         let textView = BTextView(lorem, font!, parent: textArea)
         textView.text = lorem
 
+        // Button panel.
+        let buttonPanel = BView(
+            parent: window.body,
+            geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
+        )
+        buttonPanel.layout = VBoxLayout()
+
         window.body.onResize += { event in
             let geometry = Rect(
                 x: 0.0,
@@ -35,21 +42,9 @@ public struct Program {
             textArea.geometry = geometry
             textView.geometry = geometry
 
-            // print(textView.textLayout?.width)
-        }
-
-        // Button panel.
-        let buttonPanel = BView(
-            parent: window.body,
-            geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
-        )
-        buttonPanel.layout = VBoxLayout()
-        window.body.onResize += { event in
-            let geometry = Rect(
-                x: textArea.size.width, y: 0.0,
-                width: 100.0, height: window.body.size.height
+            buttonPanel.geometry = Rect(
+                x: textArea.size.width, y: 0.0, width: 100.0, height: window.body.size.height,
             )
-            buttonPanel.geometry = geometry
         }
 
         // Buttons.

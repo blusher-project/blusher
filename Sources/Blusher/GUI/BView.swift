@@ -199,6 +199,16 @@ open class BView {
         return Point(x: Double(sbPoint.x), y: Double(sbPoint.y))
     }
 
+    public var physicalGeometry: RectI {
+        let sbRectI = sb_view_physical_geometry(_sbView)
+        return RectI(
+            x: Int(sbRectI.position.x),
+            y: Int(sbRectI.position.y),
+            width: Int(sbRectI.size.width),
+            height: Int(sbRectI.size.height)
+        )
+    }
+
     public var isVisible: Bool {
         get { sb_view_visible(_sbView) }
         set { sb_view_set_visible(_sbView, newValue) }

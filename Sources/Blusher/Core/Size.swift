@@ -16,4 +16,9 @@ public struct SizeI: Equatable {
         self.width = width
         self.height = height
     }
+
+    /// Convert to `Blusher.Size`.
+    public func toSize() -> Size {
+        return Size(width: Double(self.width), height: Double(self.height))
+    }
 }

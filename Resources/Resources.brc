@@ -13,4 +13,5 @@ files = [
     { path = "maximize.png" },
     { path = "restore.png" },
     { path = "minimize.png" },
+    { path = "blusher-icon.png" },
 ]

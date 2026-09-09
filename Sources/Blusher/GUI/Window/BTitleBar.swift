@@ -80,12 +80,15 @@ public class BTitleBar: BView {
 
     public class Icon: BView {
         init(_ titleBar: BTitleBar) {
-            let rect = Rect(x: 100.0, y: 0.0, width: 100.0, height: BTitleBar.thickness)
+            let rect = Rect(x: 100.0, y: 0.0, width: 28.0, height: 28.0)
             super.init(parent: titleBar, geometry: rect)
 
-            self.renderType = .canvas
+            self.renderType = .image
+            self.image = ImageHandle(fromURL: "brc:///org.blusher.Blusher/blusher-icon.png")
+            self.isAntialiased = true
         }
 
+        /*
         public override func paintEvent(_ event: Event) {
             var paint = Paint()
             paint.strokeWidth = 1.0
@@ -99,11 +102,12 @@ public class BTitleBar: BView {
 
             super.paintEvent(event)
         }
+        */
     }
 
     public class Caption: BView {
         init(_ titleBar: BTitleBar) {
-            let rect = Rect(x: 100.0, y: 0.0, width: 100.0, height: BTitleBar.thickness)
+            let rect = Rect(x: 140.0, y: 0.0, width: 100.0, height: BTitleBar.thickness)
             super.init(parent: titleBar, geometry: rect)
 
             self.renderType = .text

@@ -10,7 +10,7 @@ public enum ViewRenderType {
 open class BView {
     private var _sbView: OpaquePointer?
     private var _surface: BSurface? = nil
-    private var _parent: BView? = nil
+    private weak var _parent: BView? = nil
     private var _children: [BView] = []
 
     private var _renderType: ViewRenderType = .singleColor
@@ -49,7 +49,17 @@ open class BView {
     }
 
     public var parent: BView? {
-        _parent
+        get { _parent }
+        set {
+            if let p = newValue {
+                _parent = p
+                _surface = _parent?.surface
+                _parent?._children.append(self)
+                sb_view_set_parent(_sbView, p._sbView)
+            } else {
+                // TODO.
+            }
+        }
     }
 
     public var children: [BView] {
@@ -254,9 +264,20 @@ open class BView {
         }
     }
 
-    public var surface: BSurface? {
+    public internal(set) var surface: BSurface? {
         get {
-            return _surface
+            if _parent == nil && _surface != nil {
+                return _surface
+            }
+
+            var p = _parent
+            while p!._parent == nil {
+                p = p!._parent
+            }
+            return p!._surface
+        }
+        set {
+            _surface = newValue
         }
     }
 
@@ -279,6 +300,24 @@ open class BView {
         set { _layoutConstraint = newValue }
     }
 
+    /// Make an empty view.
+    public init() {
+        let sbRect = sb_rect_t(
+            position: sb_point_t(x: Float(0.0), y: Float(0.0)),
+            size: sb_size_t(width: Float(1.0), height: Float(1.0))
+        )
+
+        _sbView = sb_view_new(nil, sbRect)
+        _surface = nil
+        _parent = nil
+
+        clip = true
+        isAntialiased = true
+
+        addEventListeners()
+    }
+
+    /// Make new view as a child of the given parent view.
     public init(parent: BView, geometry: Rect) {
         let sbParent = parent._sbView
         let sbRect = sb_rect_t(
@@ -289,7 +328,6 @@ open class BView {
         _sbView = sb_view_new(sbParent, sbRect)
 
         _geometry = geometry
-        _surface = parent._surface
         _parent = parent
         _parent?._children.append(self)
         // For initial.
@@ -301,6 +339,7 @@ open class BView {
         addEventListeners()
     }
 
+    /// Make new view. The root view of the given surface as of parent.
     public init(surface: BSurface, geometry: Rect) {
         let sbRect = sb_rect_t(
             position: sb_point_t(x: Float(geometry.x), y: Float(geometry.y)),

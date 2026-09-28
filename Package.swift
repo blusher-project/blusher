@@ -103,6 +103,7 @@ let package = Package(
             ],
             swiftSettings: [
                 .unsafeFlags(["-enable-library-evolution"]),
+                .unsafeFlags(["-emit-module-interface"]),
                 .unsafeFlags(swingbyConf.includePathFlags),
             ],
             linkerSettings: [

@@ -14,6 +14,7 @@ let package = Package(
             swiftSettings: [
                 .unsafeFlags(["-I../../.build/debug/Modules"]),
                 .unsafeFlags(["-I../../.build/release/Modules"]),
+                .unsafeFlags(["-I\(Context.packageDirectory)/../../.build/out/Intermediates.noindex/blusher.build/Debug-linux-x86_64/Blusher-t.build/Objects-normal/x86_64"]),
             ],
             linkerSettings: [
                 .linkedLibrary("Blusher"),

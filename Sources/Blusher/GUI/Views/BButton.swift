@@ -70,11 +70,11 @@ open class BButton: BView {
 
     public override func pointerPressEvent(_ event: PointerEvent) {
         _pressed = true
-        self.surface.update()
+        self.surface?.update()
     }
 
     public override func pointerReleaseEvent(_ event: PointerEvent) {
         _pressed = false
-        self.surface.update()
+        self.surface?.update()
     }
 }

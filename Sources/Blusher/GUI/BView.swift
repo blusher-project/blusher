@@ -9,8 +9,8 @@ public enum ViewRenderType {
 
 open class BView {
     private var _sbView: OpaquePointer?
-    private var _surface: BSurface!
-    private var _parent: BView?
+    private var _surface: BSurface? = nil
+    private var _parent: BView? = nil
     private var _children: [BView] = []
 
     private var _renderType: ViewRenderType = .singleColor
@@ -254,7 +254,7 @@ open class BView {
         }
     }
 
-    public var surface: BSurface {
+    public var surface: BSurface? {
         get {
             return _surface
         }
@@ -290,7 +290,6 @@ open class BView {
 
         _geometry = geometry
         _surface = parent._surface
-        _surface.children.append(self)
         _parent = parent
         _parent?._children.append(self)
         // For initial.
@@ -312,7 +311,6 @@ open class BView {
 
         _geometry = geometry
         _surface = surface
-        _surface.children.append(self)
         _parent = nil
 
         clip = true

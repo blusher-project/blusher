@@ -35,7 +35,7 @@ public class BTextView: BView {
         get { super.size }
         set {
             super.size = newValue
-            self.textLayout?.width = Float(newValue.width) * Float(super.surface.scale)
+            self.textLayout?.width = Float(newValue.width) * Float(super.surface!.scale)
         }
     }
 

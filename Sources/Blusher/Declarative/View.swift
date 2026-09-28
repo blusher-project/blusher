@@ -265,7 +265,8 @@ class ViewRenderer {
         print(" - ViewRenderer.update()")
         var index = 0
         let _ = visit(view: view, store: store, parentViewHandle: parentViewHandle) { view, store, parent in
-            let viewHandle = uiSurface.children[index]
+            let viewHandle = parentViewHandle!.children[index]
+            // let viewHandle = uiSurface.children[index]
 
             viewHandle.geometry = store[GeometryKey.self]
             viewHandle.color = store[ColorKey.self]

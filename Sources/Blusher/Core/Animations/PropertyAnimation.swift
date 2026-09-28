@@ -78,6 +78,10 @@ public class PropertyAnimation<T>: Animation {
     }
 
     public func start() {
+        if _target.surface == nil {
+            return
+        }
+
         self.stop()
 
         if _state == .stopped {
@@ -97,17 +101,21 @@ public class PropertyAnimation<T>: Animation {
         }
         _startTime = BlusherHelper.timeNowMilliseconds()
         _timerID = BApplication.shared.addTimer(
-            to: _target.surface,
+            to: _target.surface!,
             interval: self.interval,
             repeats: true
         )
 
-        _target.surface.onTimeout += self.onTimerStart
+        _target.surface!.onTimeout += self.onTimerStart
 
         _state = .running
     }
 
     public func reverse() {
+        if _target.surface == nil {
+            return
+        }
+
         self.stop()
 
         if _state == .stopped {
@@ -127,12 +135,12 @@ public class PropertyAnimation<T>: Animation {
         }
         _startTime = BlusherHelper.timeNowMilliseconds()
         _timerID = BApplication.shared.addTimer(
-            to: _target.surface,
+            to: _target.surface!,
             interval: self.interval,
             repeats: true
         )
 
-        _target.surface.onTimeout += self.onTimerReverse
+        _target.surface!.onTimeout += self.onTimerReverse
 
         _state = .reversing
     }
@@ -157,7 +165,7 @@ public class PropertyAnimation<T>: Animation {
             // _target.surface.removeTimer(_timerID);
             BApplication.shared.removeTimer(for: _timerID)
             _timerID = -1
-            _target.surface.onTimeout -= self.onTimerStart
+            _target.surface!.onTimeout -= self.onTimerStart
 
             self.state = .stopped
             self.repeating = false
@@ -185,7 +193,7 @@ public class PropertyAnimation<T>: Animation {
             // _target.surface.removeTimer(_timerID)
             BApplication.shared.removeTimer(for: _timerID)
             _timerID = -1
-            _target.surface.onTimeout -= self.onTimerReverse
+            _target.surface!.onTimeout -= self.onTimerReverse
 
             _state = .stopped
             _repeating = false
@@ -205,12 +213,15 @@ public class PropertyAnimation<T>: Animation {
     }
 
     internal func stop() {
+        if _target.surface == nil {
+            return
+        }
         // Last = Target.Value;
         if _timerID != -1 {
             BApplication.shared.removeTimer(for: _timerID)
             _timerID = -1
-            _target.surface.onTimeout -= self.onTimerStart
-            _target.surface.onTimeout -= self.onTimerReverse
+            _target.surface!.onTimeout -= self.onTimerStart
+            _target.surface!.onTimeout -= self.onTimerReverse
         }
     }
 

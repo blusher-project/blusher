@@ -41,8 +41,6 @@ open class BSurface {
         _sbSurface
     }
 
-    public var children: [BView] = []
-
     public var rootViewColor: Color {
         get {
             // TODO: Impl.

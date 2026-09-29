@@ -221,7 +221,10 @@ open class BView {
 
     public var isVisible: Bool {
         get { sb_view_visible(_sbView) }
-        set { sb_view_set_visible(_sbView, newValue) }
+        set {
+            sb_view_set_visible(_sbView, newValue)
+            self.surface?.update()
+        }
     }
 
     public var isAntialiased: Bool {
@@ -271,7 +274,7 @@ open class BView {
             }
 
             var p = _parent
-            while p!._parent == nil {
+            while p!._parent != nil {
                 p = p!._parent
             }
             return p!._surface

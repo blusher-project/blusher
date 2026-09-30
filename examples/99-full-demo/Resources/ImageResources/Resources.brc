@@ -1,0 +1,8 @@
+[options]
+compression = "zstd"
+
+[[resource]]
+prefix = "/org.blusher.Example"
+files = [
+    { path = "swingby.png" },
+]

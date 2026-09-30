@@ -321,7 +321,7 @@ open class BView {
     }
 
     /// Make new view as a child of the given parent view.
-    public init(parent: BView, geometry: Rect) {
+    public init(parent: BView, geometry: Rect = Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)) {
         let sbParent = parent._sbView
         let sbRect = sb_rect_t(
             position: sb_point_t(x: Float(geometry.x), y: Float(geometry.y)),

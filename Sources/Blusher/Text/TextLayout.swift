@@ -84,6 +84,7 @@ public class TextLayout {
         self.init(text, font)
     }
 
+    // TODO: Not working.
     public init(_ text: String, _ font: Font) {
         _sbLayout = sb_glyph_layout_new()
 

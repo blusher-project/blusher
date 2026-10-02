@@ -83,9 +83,11 @@ let package = Package(
         ),
         .target(
             name: "CYoga",
+            cSettings: [
+                .unsafeFlags(["-I\(Context.packageDirectory)/third_party/yoga"]),
+            ],
             linkerSettings: [
                 .unsafeFlags([
-                    "-Ithird_party/yoga/yoga",
                     "-Lthird_party/yoga/build"
                 ]),
                 .linkedLibrary("yogacore"),
@@ -100,6 +102,9 @@ let package = Package(
                 "CSdBus",
                 "CYoga",
                 "BlusherResources",
+            ],
+            cSettings: [
+                .unsafeFlags(["-I\(Context.packageDirectory)/third_party/yoga"]),
             ],
             swiftSettings: [
                 .unsafeFlags(["-enable-library-evolution"]),

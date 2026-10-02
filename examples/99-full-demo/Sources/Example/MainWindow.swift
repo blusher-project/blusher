@@ -16,5 +16,6 @@ class MainWindow: BWindow {
 
         self.tabView.addItem(BTabViewItem(title: "Text", view: TextExampleView()))
         self.tabView.addItem(BTabViewItem(title: "Image", view: ImageExampleView()))
+        self.tabView.addItem(BTabViewItem(title: "Canvas", view: CanvasExampleView()))
     }
 }

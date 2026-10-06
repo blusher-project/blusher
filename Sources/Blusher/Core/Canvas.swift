@@ -10,11 +10,17 @@ func paintToSbPaint(_ paint: Paint) -> OpaquePointer {
     var fillColor = colorToSbColor(paint.fillColor)
     var strokeColor = colorToSbColor(paint.strokeColor)
     let strokeWidth = paint.strokeWidth
+    let sbStrokeSizing = switch paint.strokeSizing {
+    case .inner: SB_STROKE_SIZING_INNER
+    case .center: SB_STROKE_SIZING_CENTER
+    case .outer: SB_STROKE_SIZING_OUTER
+    }
 
     let sbPaint = sb_paint_new()
     sb_paint_set_fill_color(sbPaint, &fillColor)
     sb_paint_set_stroke_color(sbPaint, &strokeColor)
     sb_paint_set_stroke_width(sbPaint, strokeWidth)
+    sb_paint_set_stroke_sizing(sbPaint, sbStrokeSizing)
 
     return sbPaint!
 }

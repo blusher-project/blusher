@@ -15,6 +15,7 @@ open class BTabView: BView {
 
             self.size.width = 100.0
             self.size.height = 24.0
+            self.color = .transparent
 
             self.layout = HBoxLayout()
         }
@@ -48,11 +49,38 @@ open class BTabView: BView {
         }
     }
 
+    class Frame: BView {
+        init(parent: BView) {
+            super.init(parent: parent)
+
+            self.renderType = .canvas
+        }
+
+        override func paintEvent(_ event: Event) {
+            var paint = Paint()
+            paint.strokeWidth = 3.0
+            paint.strokeColor = .red
+
+            let roundedRect = RoundedRect(
+                x: 0.0, y: 0.0,
+                width: self.geometry.width, height: self.geometry.height,
+                radii: Radii(all: 4.0)
+            )
+
+            self.canvas?.save()
+            self.canvas?.clipRoundedRect(roundedRect)
+            self.canvas?.drawRoundedRect(roundedRect, paint)
+            self.canvas?.restore()
+
+            super.paintEvent(event)
+        }
+    }
+
     //===================
     // Private Members
     //===================
 
-    private var _frameView: BView!
+    private var _frameView: Frame!
     private var _tabButtons: TabButtonGroup!
     private var _itemView: BView!
     private var _tabIndex: Int = 0
@@ -80,9 +108,10 @@ open class BTabView: BView {
 
         self.size = Size(width: 100.0, height: 100.0)
         self.layout = FillLayout()
+        self.layout?.insets = Insets(all: 12.0)
 
-        _frameView = BView(parent: self, geometry: self.geometry)
-        _frameView.color = Color(r: 0.3, g: 0.3, b: 0.3, a: 1.0)
+        _frameView = Frame(parent: self)
+
         _tabButtons = TabButtonGroup(parent: _frameView)
 
         _itemView = BView(parent: _frameView, geometry: self._itemViewGeometry)
@@ -138,6 +167,8 @@ open class BTabView: BView {
     override open func resizeEvent(_ event: ResizeEvent) {
         _frameView.size = event.size
         _itemView.geometry = _itemViewGeometry
+
+        self.layingOut()
 
         super.resizeEvent(event)
     }

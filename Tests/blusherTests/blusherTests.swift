@@ -17,6 +17,9 @@ import Testing
     let black = Color(r: 0, g: 0, b: 0, a: 255)
 
     #expect(white != black)
+
+    let silver = Color(r8: 0xC0, g8: 0xC0, b8: 0xC0, a8: 0xFF)
+    #expect(silver == .silver)
 }
 
 @Test func fileSystem() async throws {

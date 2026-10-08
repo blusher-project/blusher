@@ -41,6 +41,7 @@ open class BView {
     internal var _resizeHandler: ((ResizeEvent) -> Void)? = nil
     internal var _paintHandler: ((Event) -> Void)? = nil
 
+    public var onPointerEnter: EventHandler<PointerEvent>? = nil
     public var onPointerClick: EventHandler<PointerEvent>? = nil
     public var onResize: EventHandler<ResizeEvent>? = nil
 
@@ -627,6 +628,7 @@ open class BView {
     open func pointerEnterEvent(_ event: PointerEvent) {
         ToplevelStorage._uiSurface = self._surface
         _pointerEnterHandler?(event)
+        self.onPointerEnter?.invoke(event)
         ToplevelStorage._uiSurface = nil
     }
 

@@ -32,6 +32,11 @@ public class Canvas {
         _sbCanvas = sbCanvas
     }
 
+    public func clear(_ color: Color) {
+        let sbColor = colorToSbColor(color)
+        sb_canvas_clear(_sbCanvas, sbColor)
+    }
+
     public func drawRect(_ rect: Rect, _ paint: Paint) {
         var sbRect = sb_rect_t(
             position: sb_point_t(x: Float(rect.x), y: Float(rect.y)),

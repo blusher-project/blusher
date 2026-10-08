@@ -5,7 +5,7 @@ class TextExampleView: BView {
         super.init()
 
         self.size = Size(width: 300.0, height: 300.0)
-
+        self.color = .transparent
 
         // Text area.
         let textArea = BView(

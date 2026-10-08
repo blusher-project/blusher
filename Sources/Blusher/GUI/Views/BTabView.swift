@@ -10,10 +10,10 @@ public class BTabViewItem {
 
 open class BTabView: BView {
     class TabButtonGroup: BView {
-        init(parent: BView) {
-            super.init(parent: parent)
+        override init() {
+            super.init()
 
-            self.size.width = 100.0
+            self.size.width = 130.0
             self.size.height = 24.0
             self.color = .transparent
 
@@ -31,7 +31,7 @@ open class BTabView: BView {
             _index = index
             _title = title
 
-            super.init(parent: parent, geometry: Rect(x: 0.0, y: 0.0, width: 32.0, height: 24.0))
+            super.init(parent: parent, geometry: Rect(x: 0.0, y: 0.0, width: 36.0, height: 24.0))
 
             self.renderType = .text
             self.textLayout = TextLayout()
@@ -39,8 +39,6 @@ open class BTabView: BView {
         }
 
         override func pointerEnterEvent(_ event: PointerEvent) {
-            print("TabButton: \(_title)")
-
             super.pointerEnterEvent(event)
         }
 
@@ -56,10 +54,16 @@ open class BTabView: BView {
             self.renderType = .canvas
         }
 
+        func setTabButtonGroup(_ buttonGroup: TabButtonGroup) {
+            buttonGroup.parent = self
+        }
+
         override func paintEvent(_ event: Event) {
+            self.canvas?.clear(.transparent)
+
             var paint = Paint()
             paint.strokeWidth = 3.0
-            paint.strokeColor = .red
+            paint.strokeColor = .gray
 
             let roundedRect = RoundedRect(
                 x: 0.0, y: 0.0,
@@ -68,7 +72,7 @@ open class BTabView: BView {
             )
 
             self.canvas?.save()
-            self.canvas?.clipRoundedRect(roundedRect)
+            // self.canvas?.clipRoundedRect(roundedRect)
             self.canvas?.drawRoundedRect(roundedRect, paint)
             self.canvas?.restore()
 
@@ -112,9 +116,12 @@ open class BTabView: BView {
 
         _frameView = Frame(parent: self)
 
-        _tabButtons = TabButtonGroup(parent: _frameView)
+        _tabButtons = TabButtonGroup()
+
+        _frameView.setTabButtonGroup(_tabButtons)
 
         _itemView = BView(parent: _frameView, geometry: self._itemViewGeometry)
+        _itemView.color = .transparent
         _itemView.layout = FillLayout()
     }
 
@@ -165,7 +172,8 @@ open class BTabView: BView {
     }
 
     override open func resizeEvent(_ event: ResizeEvent) {
-        _frameView.size = event.size
+        // _frameView.size = event.size
+        _tabButtons.size.width = event.size.width
         _itemView.geometry = _itemViewGeometry
 
         self.layingOut()

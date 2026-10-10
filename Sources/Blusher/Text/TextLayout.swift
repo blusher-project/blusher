@@ -28,6 +28,11 @@ public class TextLayout2 {
         _runs
     }
 
+    public var font: Font {
+        get { _currentFont }
+        set { _currentFont = newValue }
+    }
+
     public var cursorPosition: Point {
         get { _cursorPosition }
         set { _cursorPosition = newValue }
@@ -91,6 +96,12 @@ public class TextLayout2 {
         pango_font_description_free(desc)
     }
 
+    private func getBaseline(_ lineIter: OpaquePointer) -> Double {
+        let pangoBaseline = pango_layout_iter_get_baseline(lineIter)
+        let baseline = Double(pangoBaseline) / Pango.scaleD
+        return baseline
+    }
+
     //==================
     // Public Method
     //==================
@@ -105,14 +116,19 @@ public class TextLayout2 {
         let pangoBaseline = pango_layout_get_baseline(_pangoLayout)
         let baseline = Double(pangoBaseline) / Pango.scaleD
         _runs.baseline = baseline
+        Logger.debug("runs baseline: \(baseline)")
 
-        var totalY: Double = 0.0
+        let pangoIter = pango_layout_get_iter(_pangoLayout)
+        if pangoIter == nil {
+            Logger.error("pango_layout_get_iter() == nil")
+            return
+        }
         for i in 0..<self.lineCount() {
             var x = 0.0
             var runCount = 0
             // Count runs.
             let pangoLine: UnsafeMutablePointer<PangoLayoutLine> =
-                pango_layout_get_line_readonly(_pangoLayout, Int32(i))
+                pango_layout_iter_get_line_readonly(pangoIter)
             var it: UnsafeMutablePointer<GSList>? = pangoLine.pointee.runs
             while it != nil {
                 runCount += 1
@@ -121,6 +137,7 @@ public class TextLayout2 {
 
             // let metrics = FontMetrics(_currentFont)
 
+            let baseline = (i != 0) ? self.getBaseline(pangoIter!) - _runs.baseline : 0.0
             // Fill runs.
             it = pangoLine.pointee.runs
             while it != nil {
@@ -145,7 +162,7 @@ public class TextLayout2 {
                     // run[i].advance = advance
                     run.positions.append(Point(
                         x: x,
-                        y: (Double(info.geometry.y_offset) + totalY)// / Pango.scaleD
+                        y: (Double(info.geometry.y_offset) + baseline)// / Pango.scaleD
                     ))
                     x += advance
                 }
@@ -153,9 +170,9 @@ public class TextLayout2 {
                     Logger.error("Run count incorrect!")
                 }
                 _runs.runs.append(run)
-                totalY += 20.0
                 it = it?.pointee.next
             }
+            pango_layout_iter_next_line(pangoIter)
         }
     }
 }

@@ -1,6 +1,165 @@
 @_implementationOnly import Swingby
 internal import CPango
 
+public class TextLayout2 {
+    private var _pangoFontMap: UnsafeMutablePointer<PangoFontMap>?
+    private var _pangoContext: OpaquePointer?
+    private var _pangoLayout: OpaquePointer?
+
+    private var _text: String = ""
+    private var _runs: GlyphRuns
+    private var _currentFont: Font!
+    private var _cursorPosition: Point = Point(x: 0.0, y: 0.0)
+
+    public var text: String {
+        get { _text }
+        set {
+            if _text != newValue {
+                _text = newValue
+                _text.withCString { cStr in
+                    pango_layout_set_text(_pangoLayout, cStr, -1)
+                }
+                self.update()
+            }
+        }
+    }
+
+    public var runs: GlyphRuns {
+        _runs
+    }
+
+    public var cursorPosition: Point {
+        get { _cursorPosition }
+        set { _cursorPosition = newValue }
+    }
+
+    public var width: Float {
+        get { Float(pango_layout_get_width(_pangoLayout)) }
+        set {
+            let width = newValue * Pango.scaleF
+            let before = pango_layout_get_serial(_pangoLayout)
+            pango_layout_set_width(_pangoLayout, Int32(width))
+            let after = pango_layout_get_serial(_pangoLayout)
+            if before != after {
+                self.update()
+            }
+        }
+    }
+
+    public convenience init() {
+        let text = ""
+        let font = FontLibrary.shared.findFont(family: "Noto Sans")!
+
+        self.init(text, font)
+        self.width = 100.0
+    }
+
+    // TODO: Not working.
+    public init(_ text: String, _ font: Font) {
+        _pangoFontMap = pango_ft2_font_map_new()
+        _pangoContext = pango_font_map_create_context(_pangoFontMap)
+        _pangoLayout = pango_layout_new(_pangoContext)
+
+        // This is important. If this feature is on, the positions of glyphs
+        // are rounded into integer. So glyphs looks unaligned specifically in
+        // small font size.
+        pango_context_set_round_glyph_positions(_pangoContext, 0)
+
+        _text = text
+        _runs = GlyphRuns()
+        _currentFont = font
+    }
+
+    deinit {
+        // TODO!
+    }
+
+    //==================
+    // Private Method
+    //==================
+    private func lineCount() -> Int {
+        Int(pango_layout_get_line_count(_pangoLayout))
+    }
+
+    private func setPangoFont(_ font: Font) {
+        let desc = pango_font_description_new()
+
+        pango_font_description_set_family(desc, font.family)
+        pango_font_description_set_absolute_size(desc, Double(font.size) * Double(PANGO_SCALE))
+        pango_layout_set_font_description(_pangoLayout, desc)
+
+        pango_font_description_free(desc)
+    }
+
+    //==================
+    // Public Method
+    //==================
+    public func update() {
+        self.setPangoFont(_currentFont)
+
+        pango_layout_context_changed(_pangoLayout)
+
+        _runs = GlyphRuns()
+
+        // Get the baseline.
+        let pangoBaseline = pango_layout_get_baseline(_pangoLayout)
+        let baseline = Double(pangoBaseline) / Pango.scaleD
+        _runs.baseline = baseline
+
+        var totalY: Double = 0.0
+        for i in 0..<self.lineCount() {
+            var x = 0.0
+            var runCount = 0
+            // Count runs.
+            let pangoLine: UnsafeMutablePointer<PangoLayoutLine> =
+                pango_layout_get_line_readonly(_pangoLayout, Int32(i))
+            var it: UnsafeMutablePointer<GSList>? = pangoLine.pointee.runs
+            while it != nil {
+                runCount += 1
+                it = it?.pointee.next
+            }
+
+            // let metrics = FontMetrics(_currentFont)
+
+            // Fill runs.
+            it = pangoLine.pointee.runs
+            while it != nil {
+                let l = UnsafeMutableRawPointer(it!).assumingMemoryBound(to: GSList.self)
+                let item = UnsafeMutableRawPointer(l.pointee.data)
+                    .assumingMemoryBound(to: PangoGlyphItem.self)
+
+                /*
+                let pangoFont = item.pointee.item.pointee.analysis.font
+                let pangoDesc = pango_font_describe(pangoFont)
+                print("pango family: \(String(cString: pango_font_description_get_family(pangoDesc)!))")
+                */
+
+                let glyphs: UnsafeMutablePointer<PangoGlyphString>? = item.pointee.glyphs
+                let run = GlyphRun2(count: Int(glyphs!.pointee.num_glyphs), font: self._currentFont)
+                for i in 0..<Int(glyphs!.pointee.num_glyphs) {
+                    let info = glyphs!.pointee.glyphs[i]
+
+                    let advance: Double = Double(info.geometry.width) / Pango.scaleD
+
+                    run.glyphs.append(info.glyph)
+                    // run[i].advance = advance
+                    run.positions.append(Point(
+                        x: x,
+                        y: (Double(info.geometry.y_offset) + totalY)// / Pango.scaleD
+                    ))
+                    x += advance
+                }
+                if !run.validate() {
+                    Logger.error("Run count incorrect!")
+                }
+                _runs.runs.append(run)
+                totalY += 20.0
+                it = it?.pointee.next
+            }
+        }
+    }
+}
+
 public class TextLayout {
     public class Line {
         internal var _sbGlyphLine: OpaquePointer? = nil

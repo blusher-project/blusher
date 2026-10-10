@@ -6,6 +6,12 @@ func colorToSbColor(_ color: Color) -> sb_color_t {
     return sb_color_t
 }
 
+func pointToSbPoint(_ point: Point) -> sb_point_t {
+    let sb_point_t = sb_point_t(x: Float(point.x), y: Float(point.y))
+
+    return sb_point_t
+}
+
 func paintToSbPaint(_ paint: Paint) -> OpaquePointer {
     var fillColor = colorToSbColor(paint.fillColor)
     var strokeColor = colorToSbColor(paint.strokeColor)
@@ -85,6 +91,26 @@ public class Canvas {
 
     public func drawLine(_ x1: Double, _ y1: Double, _ x2: Double, _ y2: Double, _ paint: Paint) {
         self.drawLine(Point(x: x1, y: y1), Point(x: x2, y: y2), paint)
+    }
+
+    public func drawTextLayout(_ textLayout: TextLayout2, _ position: Point) {
+        let sbRuns = sb_glyph_block_new()
+        sb_glyph_block_set_baseline(sbRuns, Float(textLayout.runs.baseline))
+        for run in textLayout.runs.runs {
+            let font = run.font
+            var sbFont = sb_font_t(path: nil, ttc_index: Int32(font.ttcIndex), size: font.size)
+            font.path.withCString { cStr in
+                sbFont.path = cStr
+            }
+            let sbRun = sb_glyph_run2_new(UInt32(run.count), &sbFont)
+            for idx in 0..<run.count {
+                sb_glyph_run2_glyphs(sbRun)[idx] = run.glyphs[idx]
+                sb_glyph_run2_positions(sbRun)[idx] = pointToSbPoint(run.positions[idx])
+            }
+
+            sb_glyph_block_add(sbRuns, sbRun)
+        }
+        sb_canvas_draw_glyph_runs(_sbCanvas, sbRuns, pointToSbPoint(position))
     }
 
     public func save() {

@@ -167,8 +167,22 @@ public class TextLayout {
                 let item = UnsafeMutableRawPointer(l.pointee.data)
                     .assumingMemoryBound(to: PangoGlyphItem.self)
 
+                // Get fallback font info.
+                let pangoFont = item.pointee.item.pointee.analysis.font!
+                let description = Pango.FontDescription(fromPangoFont: pangoFont)
+                let font = FontLibrary.shared.findFont(
+                    family: description.family,
+                    size: _currentFont.size
+                )
+                if font != nil {
+                    _currentFont = font
+                }
+
                 let glyphs: UnsafeMutablePointer<PangoGlyphString>? = item.pointee.glyphs
-                let run = GlyphRun(count: Int(glyphs!.pointee.num_glyphs), font: self._currentFont)
+                let run = GlyphRun(
+                    count: Int(glyphs!.pointee.num_glyphs),
+                    font: _currentFont
+                )
                 for i in 0..<Int(glyphs!.pointee.num_glyphs) {
                     let info = glyphs!.pointee.glyphs[i]
 
@@ -176,17 +190,15 @@ public class TextLayout {
 
                     // Logger.debug("glyph: \(info.glyph) advance: \(advance) x_offset: \(info.geometry.x_offset / PANGO_SCALE) y_offset: \(info.geometry.y_offset / PANGO_SCALE)")
 
-                    /*
-                    run[i].id = info.glyph
-                    run[i].advance = advance
-                    run[i].offset.x = Double(info.geometry.x_offset) / Pango.scaleD
-                    run[i].offset.y = Double(info.geometry.y_offset) / Pango.scaleD
-                    */
+                    let offset = Point(
+                        x: Double(info.geometry.x_offset) / Pango.scaleD,
+                        y: Double(info.geometry.y_offset) / Pango.scaleD
+                    )
 
                     run.glyphs.append(info.glyph)
                     run.positions.append(Point(
-                        x: x,
-                        y: (Double(info.geometry.y_offset) + baseline)// / Pango.scaleD
+                        x: x + (offset.x),
+                        y: (offset.y) + baseline
                     ))
                     x += advance
                 }
@@ -264,8 +276,58 @@ internal enum Pango {
             _ptr = pango_font_description_new()
         }
 
+        public init(fromPangoFont pangoFont: UnsafeMutablePointer<PangoFont>) {
+            _ptr = pango_font_describe(pangoFont)
+
+            let family = pango_font_description_get_family(_ptr)
+            if family != nil {
+                _family = String(cString: family!)
+            }
+        }
+
         deinit {
             pango_font_description_free(_ptr)
+        }
+    }
+
+    public class Font {
+        private var _pangoFont: UnsafeMutablePointer<PangoFont>
+
+        public init(_ pangoFont: UnsafeMutablePointer<PangoFont>) {
+            _pangoFont = pangoFont
+        }
+
+        public func filePath() -> String? {
+            // Type cast.
+            let pangoFcFont = UnsafeMutableRawPointer(_pangoFont)
+                .assumingMemoryBound(to: PangoFcFont.self)
+
+            // Get Fontconfig pattern.
+            guard let fcPattern = pango_fc_font_get_pattern(pangoFcFont) else { return nil }
+
+            var path: UnsafeMutablePointer<FcChar8>? = nil
+            let result = FcPatternGetString(fcPattern, FC_FILE, 0, &path)
+            if result == FcResultNoMatch {
+                return nil
+            }
+
+            return String(
+                cString: UnsafeMutableRawPointer(path!).assumingMemoryBound(to: CChar.self)
+            )
+        }
+
+        public func ttcIndex() -> Int {
+            // Type cast.
+            let pangoFcFont = UnsafeMutableRawPointer(_pangoFont)
+                .assumingMemoryBound(to: PangoFcFont.self)
+
+            // Get Fontconfig pattern.
+            guard let fcPattern = pango_fc_font_get_pattern(pangoFcFont) else { return 0 }
+
+            var index: Int32 = 0
+            FcPatternGetInteger(fcPattern, FC_INDEX, 0, &index)
+
+            return Int(index)
         }
     }
 
@@ -290,7 +352,7 @@ internal enum Pango {
         private var _fontDescription: FontDescription
         private var _lines: [Line] = []
         private var _text: String = ""
-        private var _textRuns: [(String, Font)] = []
+        private var _textRuns: [(String, Blusher.Font)] = []
 
         public var fontDescription: FontDescription {
             get { _fontDescription }
@@ -366,7 +428,7 @@ internal enum Pango {
             }
         }
 
-        public func appendText(_ text: String, _ font: Font) {
+        public func appendText(_ text: String, _ font: Blusher.Font) {
             _textRuns.append((text, font))
         }
     }

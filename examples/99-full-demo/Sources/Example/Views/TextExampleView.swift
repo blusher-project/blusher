@@ -46,9 +46,17 @@ class TextExampleView: BView {
         loremIpsum.onPointerClick += { evt in
             textView.text = lorem
         }
-        let helloWorld = BButton("Hello, world", parent: buttonPanel)
-        helloWorld.onPointerClick += { evt in
-            textView.text = "Hello, world"
+        let hindiButton = BButton("हिन्दी", parent: buttonPanel)
+        hindiButton.onPointerClick += { evt in
+            textView.text = hindi
+        }
+        let arabicButton = BButton("العربية", parent: buttonPanel)
+        arabicButton.onPointerClick += { evt in
+            textView.text = arabic
+        }
+        let japaneseButton = BButton("日本語", parent: buttonPanel)
+        japaneseButton.onPointerClick += { evt in
+            textView.text = japanese
         }
     }
 }

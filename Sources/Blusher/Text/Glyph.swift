@@ -45,12 +45,11 @@ public class GlyphRun2 {
     }
 }
 
-public class GlyphRuns {
-    public var runs: [GlyphRun2] = []
+public class GlyphBlock {
+    public var runs: [GlyphRun] = []
     public var baseline: Double = 0.0
 
     public init() {
-        //
     }
 }
 
@@ -61,31 +60,39 @@ public class GlyphRuns {
 public class GlyphRun {
     internal var _sbGlyphRun: OpaquePointer? = nil
     private var _glyphBuffer: [Glyph] = []
-    private var _font: Font!
+    private let _count: Int
+
+    public var glyphs: [GlyphID] = []
+    public var positions: [Point] = []
+    public var font: Font
 
     public var count: Int {
-        return Int(sb_glyph_run_count(_sbGlyphRun))
+        _count
     }
 
     public init(count: Int, font: Font) {
-        _font = font
+        _count = count
+        self.font = font
+
         var sbFont = sb_font_t(path: nil, ttc_index: Int32(font.ttcIndex), size: font.size)
 
         font.path.withCString { cStr in
             sbFont.path = cStr
         }
-        // sbFont.ttc_index = 0
 
-        _sbGlyphRun = sb_glyph_run_new(UInt32(count), &sbFont)
-
-        for _ in 0..<count {
-            _glyphBuffer.append(Glyph(id: 0))
-        }
+        _sbGlyphRun = sb_glyph_run2_new(UInt32(count), &sbFont)
     }
 
     deinit {
-        // TODO: Isn't it dangerous? Yes!
-        // sb_glyph_run_free(_sbGlyphRun)
+        sb_glyph_run2_free(_sbGlyphRun)
+    }
+
+    public func validate() -> Bool {
+        if self.glyphs.count != _count || self.positions.count != _count {
+            return false
+        }
+
+        return true
     }
 
     public subscript(_ index: Int) -> Glyph {

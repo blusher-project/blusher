@@ -8,6 +8,9 @@ public enum ViewRenderType {
 }
 
 open class BView {
+    //==============================
+    // Private Stored Properties
+    //==============================
     private var _sbView: OpaquePointer?
     private var _surface: BSurface? = nil
     private weak var _parent: BView? = nil
@@ -18,6 +21,8 @@ open class BView {
     private var _color: Color = Color(r: 0.0, g: 0.0, b: 0.0, a: 0.0)
     private var _image: ImageHandle? = nil
     private var _textLayout: TextLayout? = nil
+    private var _glyphs: GlyphBlock? = nil
+    private var _sbGlyphBlock: OpaquePointer? = nil
     private var _geometry: Rect = Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
     private var _cursorShape: CursorShape = .default
     private var _layout: (any Layout)? = nil
@@ -32,6 +37,9 @@ open class BView {
     private var _resizeEventListener: EventListener!
     private var _paintEventListener: EventListener!
 
+    //==============================
+    // Internal Stored Properties
+    //==============================
     internal var _pointerEnterHandler: ((PointerEvent) -> Void)? = nil
     internal var _pointerLeaveHandler: ((PointerEvent) -> Void)? = nil
     internal var _pointerMoveHandler: ((PointerEvent) -> Void)? = nil
@@ -41,13 +49,23 @@ open class BView {
     internal var _resizeHandler: ((ResizeEvent) -> Void)? = nil
     internal var _paintHandler: ((Event) -> Void)? = nil
 
+    //==============================
+    // Public Stored Properties
+    //==============================
     public var onPointerEnter: EventHandler<PointerEvent>? = nil
     public var onPointerClick: EventHandler<PointerEvent>? = nil
     public var onResize: EventHandler<ResizeEvent>? = nil
 
+    //===============================
+    // Internal Computed Propereis
+    //===============================
     internal var cPointer: OpaquePointer? {
         _sbView
     }
+
+    //===============================
+    // Public Computed Properties
+    //===============================
 
     public var parent: BView? {
         get { _parent }
@@ -145,12 +163,34 @@ open class BView {
     public var textLayout: TextLayout? {
         get { _textLayout }
         set {
-            _textLayout = newValue
-
-            if let layout = newValue {
-                sb_view_set_glyph_layout(_sbView, layout._sbLayout)
-            } else {
+            if newValue == nil {
                 _textLayout = nil
+                return
+            }
+            _textLayout = newValue
+            _textLayout?.updateCallback = { [weak self] in
+                if self?._sbGlyphBlock != nil {
+                    sb_glyph_block_free(self?._sbGlyphBlock)
+                }
+
+                self?._sbGlyphBlock = sb_glyph_block_new()
+
+                let glyphBlock = self!._textLayout!.toGlyphBlock()
+                sb_glyph_block_set_baseline(self?._sbGlyphBlock, Float(glyphBlock.baseline))
+                for run in glyphBlock.runs {
+                    let font = run.font
+                    var sbFont = sb_font_t(path: nil, ttc_index: Int32(font.ttcIndex), size: font.size)
+                    font.path.withCString { cStr in
+                        sbFont.path = cStr
+                    }
+                    let sbRun = sb_glyph_run2_new(UInt32(run.count), &sbFont)
+                    for idx in 0..<run.count {
+                        sb_glyph_run2_glyphs(sbRun)[idx] = run.glyphs[idx]
+                        sb_glyph_run2_positions(sbRun)[idx] = pointToSbPoint(run.positions[idx])
+                    }
+                    sb_glyph_block_add(self?._sbGlyphBlock, sbRun)
+                }
+                sb_view_set_glyph_layout(self?._sbView, self?._sbGlyphBlock)
             }
         }
     }

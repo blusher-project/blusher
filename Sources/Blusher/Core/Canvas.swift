@@ -93,10 +93,11 @@ public class Canvas {
         self.drawLine(Point(x: x1, y: y1), Point(x: x2, y: y2), paint)
     }
 
-    public func drawTextLayout(_ textLayout: TextLayout2, _ position: Point) {
-        let sbRuns = sb_glyph_block_new()
-        sb_glyph_block_set_baseline(sbRuns, Float(textLayout.runs.baseline))
-        for run in textLayout.runs.runs {
+    public func drawTextLayout(_ textLayout: TextLayout, _ position: Point) {
+        let block = textLayout.toGlyphBlock()
+        let sbBlock = sb_glyph_block_new()
+        sb_glyph_block_set_baseline(sbBlock, Float(block.baseline))
+        for run in block.runs {
             let font = run.font
             var sbFont = sb_font_t(path: nil, ttc_index: Int32(font.ttcIndex), size: font.size)
             font.path.withCString { cStr in
@@ -108,9 +109,9 @@ public class Canvas {
                 sb_glyph_run2_positions(sbRun)[idx] = pointToSbPoint(run.positions[idx])
             }
 
-            sb_glyph_block_add(sbRuns, sbRun)
+            sb_glyph_block_add(sbBlock, sbRun)
         }
-        sb_canvas_draw_glyph_runs(_sbCanvas, sbRuns, pointToSbPoint(position))
+        sb_canvas_draw_glyph_runs(_sbCanvas, sbBlock, pointToSbPoint(position))
     }
 
     public func save() {

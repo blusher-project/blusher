@@ -43,7 +43,9 @@ public class BTextView: BView {
         super.init(parent: parent, geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0))
 
         super.renderType = .text
-        super.textLayout = TextLayout(self.text, font)
+        super.textLayout = TextLayout()
+        super.textLayout?.font = font
+        super.textLayout?.text = text
         super.textLayout?.width = 100.0
         self.text = text
 

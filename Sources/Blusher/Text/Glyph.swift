@@ -32,11 +32,11 @@ public class GlyphRun {
             sbFont.path = cStr
         }
 
-        _sbGlyphRun = sb_glyph_run2_new(UInt32(count), &sbFont)
+        _sbGlyphRun = sb_glyph_run_new(UInt32(count), &sbFont)
     }
 
     deinit {
-        sb_glyph_run2_free(_sbGlyphRun)
+        sb_glyph_run_free(_sbGlyphRun)
     }
 
     public func validate() -> Bool {

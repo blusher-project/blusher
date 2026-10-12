@@ -103,10 +103,10 @@ public class Canvas {
             font.path.withCString { cStr in
                 sbFont.path = cStr
             }
-            let sbRun = sb_glyph_run2_new(UInt32(run.count), &sbFont)
+            let sbRun = sb_glyph_run_new(UInt32(run.count), &sbFont)
             for idx in 0..<run.count {
-                sb_glyph_run2_glyphs(sbRun)[idx] = run.glyphs[idx]
-                sb_glyph_run2_positions(sbRun)[idx] = pointToSbPoint(run.positions[idx])
+                sb_glyph_run_glyphs(sbRun)[idx] = run.glyphs[idx]
+                sb_glyph_run_positions(sbRun)[idx] = pointToSbPoint(run.positions[idx])
             }
 
             sb_glyph_block_add(sbBlock, sbRun)

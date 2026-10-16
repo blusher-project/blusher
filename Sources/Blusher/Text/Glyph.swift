@@ -17,6 +17,7 @@ public class GlyphRun {
     public var glyphs: [GlyphID] = []
     public var positions: [Point] = []
     public var font: Font
+    public var boundingRect: Rect = Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
 
     public var count: Int {
         _count

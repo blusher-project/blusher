@@ -344,6 +344,10 @@ open class BView {
         set { _layoutConstraint = newValue }
     }
 
+    open var preferredSize: Size? {
+        nil
+    }
+
     /// Make an empty view.
     public init() {
         let sbRect = sb_rect_t(

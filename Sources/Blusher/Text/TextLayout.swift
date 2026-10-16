@@ -202,6 +202,17 @@ public class TextLayout {
                     ))
                     x += advance
                 }
+                // Bounding rect.
+                var pangoRect = PangoRectangle()
+                pango_glyph_string_extents(glyphs, pangoFont, nil, &pangoRect)
+                run.boundingRect.position.x = Double(pangoRect.x) / Pango.scaleD
+                run.boundingRect.position.y = Double(pangoRect.y) / Pango.scaleD
+                run.boundingRect.size = Size(
+                    width: Double(pangoRect.width) / Pango.scaleD,
+                    height: Double(pangoRect.height) / Pango.scaleD
+                )
+                Logger.debug("\(run.boundingRect)")
+
                 if !run.validate() {
                     Logger.error("Run count incorrect!")
                 }
@@ -292,6 +303,10 @@ internal enum Pango {
 
     public class Font {
         private var _pangoFont: UnsafeMutablePointer<PangoFont>
+
+        public var pangoFontPointer: UnsafeMutablePointer<PangoFont> {
+            _pangoFont
+        }
 
         public init(_ pangoFont: UnsafeMutablePointer<PangoFont>) {
             _pangoFont = pangoFont

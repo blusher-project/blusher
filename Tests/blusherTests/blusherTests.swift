@@ -13,13 +13,17 @@ import Testing
 }
 
 @Test func colorEquatable() async throws {
-    let white = Color(r: 255, g: 255, b: 255, a: 255)
-    let black = Color(r: 0, g: 0, b: 0, a: 255)
+    let white = Color(r: 1.0, g: 1.0, b: 1.0, a: 1.0)
+    let black = Color(r: 0.0, g: 0.0, b: 0.0, a: 1.0)
 
     #expect(white != black)
 
     let silver = Color(r8: 0xC0, g8: 0xC0, b8: 0xC0, a8: 0xFF)
     #expect(silver == .silver)
+
+    let deprecated = Color(r256: 0x3D, g: 0x3D, b: 0x3D, a: 0xFF)
+    let expected = Color(hex: 0x3D3D3D, alpha: 1.0)
+    #expect(deprecated == expected)
 }
 
 @Test func fileSystem() async throws {

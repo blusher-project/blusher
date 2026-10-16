@@ -36,7 +36,7 @@ public struct Color: Equatable, Sendable {
         let g = UInt8((hex >> 8) & 0xFF)
         let b = UInt8(hex & 0xFF)
         self.init(r8: r, g8: g, b8: b, a8: 0)
-        self.a = Float(a)
+        self.a = Float(alpha)
     }
 
     @available(*, unavailable, message: "Not implemented yet.")

@@ -105,14 +105,15 @@ public class BTitleBar: BView {
         */
     }
 
-    public class Caption: BView {
+    public class Caption: BLabel {
         init(_ titleBar: BTitleBar) {
             let rect = Rect(x: 140.0, y: 0.0, width: 100.0, height: BTitleBar.thickness)
-            super.init(parent: titleBar, geometry: rect)
+            super.init("Blusher Window", parent: titleBar)
+            super.geometry = rect
 
-            self.renderType = .text
-            self.textLayout = TextLayout()
-            self.textLayout?.text = "Blusher Window"
+            // self.renderType = .text
+            // self.textLayout = TextLayout()
+            // self.textLayout?.text = "Blusher Window"
         }
     }
 

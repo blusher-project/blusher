@@ -195,7 +195,7 @@ public class BTitleBar: BView {
 
         self.updateTitleGroupPosition()
 
-        self.color = Color(r256: 0xC1, g: 0xBB, b: 0xB8, a: 255)
+        self.color = Color(hex: 0xC1BBB8, alpha: 1.0)
         self.radius = Radius(topLeft: 8.0, topRight: 8.0, bottomRight: 0.0, bottomLeft: 0.0)
     }
 

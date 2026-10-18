@@ -8,9 +8,9 @@ public struct TitleBarButton: View {
     var action: TitleBarButtonAction = .close
     var buttonColor: Color!
 
-    nonisolated(unsafe) static let closeColor = Color(r: 1.0, g: 0.0, b: 0.0, a: 1.0)
-    nonisolated(unsafe) static let minimizeColor = Color(r: 1.0, g: 1.0, b: 0.0, a: 1.0)
-    nonisolated(unsafe) static let maximizeRestoreColor = Color(r: 0.0, g: 1.0, b: 0.0, a: 1.0)
+    static let closeColor = Color(r: 1.0, g: 0.0, b: 0.0, a: 1.0)
+    static let minimizeColor = Color(r: 1.0, g: 1.0, b: 0.0, a: 1.0)
+    static let maximizeRestoreColor = Color(r: 0.0, g: 1.0, b: 0.0, a: 1.0)
 
     public init(action: TitleBarButtonAction) {
         self.action = action

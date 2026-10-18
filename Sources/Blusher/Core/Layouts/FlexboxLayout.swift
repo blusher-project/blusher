@@ -92,8 +92,12 @@ public struct FlexboxLayout: Layout {
             let child = view.children[i]
 
             let node = YGNodeNew()
-            YGNodeStyleSetWidth(node, Float(child.geometry.width))
-            YGNodeStyleSetHeight(node, Float(child.geometry.height))
+
+            // Preferred size of static size.
+            let childWidth = child.preferredSize?.width ?? child.geometry.width
+            let childHeight = child.preferredSize?.height ?? child.geometry.height
+            YGNodeStyleSetWidth(node, Float(childWidth))
+            YGNodeStyleSetHeight(node, Float(childHeight))
             YGNodeInsertChild(ygRoot, node, i)
             nodes.append(node!)
         }

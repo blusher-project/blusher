@@ -6,6 +6,8 @@ public class TextLayout {
         private var _runs: [GlyphRun]
         private var _baseline: Double = 0.0
 
+        public var boundingRect: Rect = Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
+
         public var runs: [GlyphRun] {
             _runs
         }
@@ -160,6 +162,13 @@ public class TextLayout {
             var x = 0.0
             let baseline = self.getBaseline(pangoIter!)
             line.baseline = baseline
+
+            var pangoRect = PangoRectangle()
+            pango_layout_line_get_extents(pangoLine, nil, &pangoRect)
+            line.boundingRect.position.x = Double(pangoRect.x) / Pango.scaleD
+            line.boundingRect.position.y = Double(pangoRect.y) / Pango.scaleD + line.baseline
+            line.boundingRect.size.width = Double(pangoRect.width) / Pango.scaleD
+            line.boundingRect.size.height = Double(pangoRect.height) / Pango.scaleD
             // Fill runs.
             it = pangoLine.pointee.runs
             while it != nil {

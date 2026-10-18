@@ -25,7 +25,7 @@ internal final class Logger: Sendable {
         //
     }
 
-    public static func log(_ level: LogLevel, _ message: String, _ function: String = #function) {
+    public static func log(_ level: LogLevel, _ message: String, _ function: String) {
         let fd: Int32 = level == .debug ? 1 : 2
         let color: ANSIColor = switch level {
         case .debug: .green
@@ -44,9 +44,15 @@ internal final class Logger: Sendable {
         }
     }
 
+#if DEBUG
+    public static func debug(_ message: String, _ function: String = #fileID, _ line: Int = #line) {
+        Self.log(.debug, message, "\(function):\(line)")
+    }
+#else
     public static func debug(_ message: String, _ function: String = #function) {
         Self.log(.debug, message, function)
     }
+#endif
 
     public static func warn(_ message: String, _ function: String = #function) {
         Self.log(.warning, message, function)

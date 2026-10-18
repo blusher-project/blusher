@@ -22,10 +22,6 @@ public class BTitleBar: BView {
         }
     }
 
-    public class HeaderGroup: BView {
-        //
-    }
-
     public class Button: BView {
         enum Action {
             case close
@@ -78,14 +74,53 @@ public class BTitleBar: BView {
         }
     }
 
-    public class Icon: BView {
+    public class TitleGroup: BView {
+        public var icon: BView? = nil
+        public var caption: BLabel? = nil
+        public var titleBar: BTitleBar? = nil
+
+        public override var preferredSize: Size? {
+            let iconSize = Size(
+                width: icon?.geometry.width ?? 28.0,
+                height: icon?.geometry.height ?? 28.0
+            )
+            let captionSize = Size(
+                width: caption?.preferredSize?.width ?? 50.0,
+                height: caption?.preferredSize?.height ?? 30.0
+            )
+            let spacing = 8.0
+
+            return Size(
+                width: iconSize.width + spacing + captionSize.width,
+                height: iconSize.height
+            )
+        }
+
         init(_ titleBar: BTitleBar) {
-            let rect = Rect(x: 100.0, y: 0.0, width: 28.0, height: 28.0)
-            super.init(parent: titleBar, geometry: rect)
+            self.titleBar = titleBar
+
+            super.init(parent: titleBar)
+
+            self.color = .transparent
+
+            var flex = FlexboxLayout()
+            flex.flexDirection = .row
+            flex.alignItems = .center
+            flex.justifyContent = .spaceBetween
+            self.layout = flex
+        }
+    }
+
+    public class Icon: BView {
+        init(_ titleGroup: TitleGroup) {
+            let rect = Rect(x: 0.0, y: 0.0, width: 24.0, height: 24.0)
+            super.init(parent: titleGroup, geometry: rect)
 
             self.renderType = .image
             self.image = ImageHandle(fromURL: "brc:///org.blusher.Blusher/blusher-icon.png")
             self.isAntialiased = true
+
+            titleGroup.icon = self
         }
 
         /*
@@ -105,14 +140,13 @@ public class BTitleBar: BView {
         */
     }
 
-    public class Caption: BView {
-        init(_ titleBar: BTitleBar) {
-            let rect = Rect(x: 140.0, y: 0.0, width: 100.0, height: BTitleBar.thickness)
-            super.init(parent: titleBar, geometry: rect)
+    public class Caption: BLabel {
+        init(_ titleGroup: TitleGroup) {
+            let rect = Rect(x: 0.0, y: 0.0, width: 100.0, height: BTitleBar.thickness)
+            super.init("Blusher Window", parent: titleGroup)
+            super.geometry = rect
 
-            self.renderType = .text
-            self.textLayout = TextLayout()
-            self.textLayout?.text = "Blusher Window"
+            titleGroup.caption = self
         }
     }
 
@@ -129,6 +163,7 @@ public class BTitleBar: BView {
 
     private var _buttonGroup: ButtonGroup!
 
+    private var _titleGroup: TitleGroup!
     private var _icon: Icon!
     private var _caption: Caption!
 
@@ -154,11 +189,31 @@ public class BTitleBar: BView {
         // _minimizeButton.position = Point(x: 40.0, y: 3.0)
         // _maximizeOrRestoreButton.position = Point(x: 70.0, y: 3.0)
 
-        _icon = Icon(self)
-        _caption = Caption(self)
+        _titleGroup = TitleGroup(self)
+        _icon = Icon(_titleGroup)
+        _caption = Caption(_titleGroup)
+
+        self.updateTitleGroupPosition()
 
         self.color = Color(r256: 0xC1, g: 0xBB, b: 0xB8, a: 255)
         self.radius = Radius(topLeft: 8.0, topRight: 8.0, bottomRight: 0.0, bottomLeft: 0.0)
+    }
+
+    private func updateTitleGroupPosition() {
+        let diffX = self.geometry.width - _titleGroup.preferredSize!.width
+        let x = diffX / 2.0
+        let diffY = self.geometry.height - _titleGroup.preferredSize!.height
+        let y = diffY / 2.0
+        _titleGroup.geometry = Rect(
+            position: Point(x: x, y: y),
+            size: _titleGroup.preferredSize!
+        )
+    }
+
+    public override func resizeEvent(_ event: ResizeEvent) {
+        self.updateTitleGroupPosition()
+
+        super.resizeEvent(event)
     }
 
     public override func pointerPressEvent(_ event: PointerEvent) {

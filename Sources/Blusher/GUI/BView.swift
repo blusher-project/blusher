@@ -205,15 +205,20 @@ open class BView {
             }
 
             _geometry = newValue
-
-            sb_view_set_geometry(_sbView, sb_rect_t(
+            var sbRect = sb_rect_t(
                 position: sb_point_t(
                     x: Float(newValue.position.x), y: Float(newValue.position.y)
                 ),
                 size: sb_size_t(
                     width: Float(newValue.size.width), height: Float(newValue.size.height)
                 )
-            ))
+            )
+            if let preferredSize = self.preferredSize {
+                sbRect.size.width = Float(preferredSize.width)
+                sbRect.size.height = Float(preferredSize.height)
+            }
+
+            sb_view_set_geometry(_sbView, sbRect)
 
             layingOut()
         }
@@ -342,6 +347,10 @@ open class BView {
     public var layoutConstraint: LayoutConstraint? {
         get { _layoutConstraint }
         set { _layoutConstraint = newValue }
+    }
+
+    open var preferredSize: Size? {
+        nil
     }
 
     /// Make an empty view.

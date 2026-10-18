@@ -13,6 +13,11 @@ public struct Rect: Equatable {
         size.height = height
     }
 
+    public init(position: Point, size: Size) {
+        self.position = position
+        self.size = size
+    }
+
     public var x: Double {
         get { position.x }
         // set { position.x = newValue }

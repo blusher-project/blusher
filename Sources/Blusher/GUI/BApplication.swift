@@ -2,7 +2,7 @@
 internal import BlusherResources
 
 public class BApplication {
-    nonisolated(unsafe) public static var shared: BApplication!
+    nonisolated(unsafe) public static weak var shared: BApplication!
 
     private var _sbApplication: OpaquePointer? = nil
 
@@ -40,6 +40,10 @@ public class BApplication {
         addEventListeners()
 
         BApplication.shared = self
+    }
+
+    deinit {
+        Logger.debug("Quit application ...")
     }
 
     public func registerResource(_ resource: Resource) {

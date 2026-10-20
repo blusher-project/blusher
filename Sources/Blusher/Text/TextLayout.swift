@@ -35,7 +35,6 @@ public class TextLayout {
         }
     }
 
-    private var _pangoFontMap: UnsafeMutablePointer<PangoFontMap>?
     private var _pangoContext: OpaquePointer?
     private var _pangoLayout: OpaquePointer?
 
@@ -91,8 +90,8 @@ public class TextLayout {
 
     // TODO: Not working.
     public init(_ text: String, _ font: Font) {
-        _pangoFontMap = pango_ft2_font_map_new()
-        _pangoContext = pango_font_map_create_context(_pangoFontMap)
+        let pangoFontMap = Pango.FontMap.current
+        _pangoContext = pango_font_map_create_context(pangoFontMap.cPointer)
         _pangoLayout = pango_layout_new(_pangoContext)
 
         // This is important. If this feature is on, the positions of glyphs
@@ -255,6 +254,30 @@ extension TextLayout: CustomStringConvertible {
 internal enum Pango {
     public static let scaleF: Float = Float(PANGO_SCALE)
     public static let scaleD: Double = Double(PANGO_SCALE)
+
+    public class FontMap {
+        private var _pangoFontMap: UnsafeMutablePointer<PangoFontMap>? = nil
+
+        public static var current: Pango.FontMap {
+            if BApplication.shared.pangoFontMap == nil {
+                BApplication.shared.pangoFontMap = Pango.FontMap()
+            }
+            return BApplication.shared.pangoFontMap!
+        }
+
+        public var cPointer: UnsafeMutablePointer<PangoFontMap>? {
+            return _pangoFontMap
+        }
+
+        private init() {
+            _pangoFontMap = pango_ft2_font_map_new()
+        }
+
+        deinit {
+            Logger.debug("Pango.FontMap: Destroying ...")
+            g_object_unref(_pangoFontMap)
+        }
+    }
 
     public class FontDescription {
         private var _ptr: OpaquePointer!

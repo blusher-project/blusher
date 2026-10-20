@@ -4,13 +4,31 @@ internal import BlusherResources
 public class BApplication {
     nonisolated(unsafe) public static weak var shared: BApplication!
 
+    //==============================
+    // Private Stored Properties
+    //==============================
+
     private var _sbApplication: OpaquePointer? = nil
 
     private var _nextTickEventListener: EventListener!
 
+    //==============================
+    // Internal Stored Properties
+    //==============================
+
     internal var _nextTickHandler: ((Event) -> Void)? = nil
 
+    nonisolated(unsafe) internal var pangoFontMap: Pango.FontMap? = nil
+
+    //==============================
+    // Public Stored Properties
+    //==============================
+
     public var rebuildReady: Bool = false
+
+    //==============================
+    // Public Computed Properties
+    //==============================
 
     public var wlDisplay: OpaquePointer {
         sb_application_wl_display(_sbApplication)

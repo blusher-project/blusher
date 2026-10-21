@@ -11,7 +11,7 @@ public class FontLibrary {
         FcFini()
     }
 
-    public func findFont(family: String, size: Float = 12.5) -> Font? {
+    public func findFont(family: String, size: Float = 10.0) -> Font? {
         var font = Font()
 
         let pattern = FcPatternCreate()

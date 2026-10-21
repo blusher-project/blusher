@@ -4,7 +4,7 @@ class NewTextExampleView: BView {
     private var _textLayout: TextLayout
 
     override init() {
-        let font = FontLibrary.shared.findFont(family: "serif", size: 12.5)!
+        let font = FontLibrary.shared.findFont(family: "serif", size: 10.0)!
         _textLayout = TextLayout()
         _textLayout.font = font
         _textLayout.text = lorem

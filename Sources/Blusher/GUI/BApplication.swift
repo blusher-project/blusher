@@ -26,6 +26,8 @@ public class BApplication {
 
     public var rebuildReady: Bool = false
 
+    public var logicalDPI: LogicalDPI = .x96
+
     //==============================
     // Public Computed Properties
     //==============================

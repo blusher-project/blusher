@@ -3,7 +3,11 @@ open class BLabel: BView {
     private var _textLayout: TextLayout
 
     public var text: String {
-        _text
+        get { _text }
+        set {
+            _text = newValue
+            _textLayout.text = newValue
+        }
     }
 
     public override var preferredSize: Size? {

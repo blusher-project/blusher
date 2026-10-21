@@ -12,7 +12,7 @@ public class FontMetrics {
             sb_font_t(
                 path: ptr,
                 ttc_index: Int32(font.ttcIndex),
-                size: font.size
+                size: Float(font.pixelSize)
             )
         }
 

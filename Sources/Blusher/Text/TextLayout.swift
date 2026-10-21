@@ -115,13 +115,11 @@ public class TextLayout {
     }
 
     private func setPangoFont(_ font: Font) {
-        let desc = pango_font_description_new()
+        let desc = Pango.FontDescription()
 
-        pango_font_description_set_family(desc, font.family)
-        pango_font_description_set_absolute_size(desc, Double(font.size) * Double(PANGO_SCALE))
-        pango_layout_set_font_description(_pangoLayout, desc)
-
-        pango_font_description_free(desc)
+        desc.family = font.family
+        desc.size = Pango.PangoUnit(font.size * Pango.scaleF)
+        pango_layout_set_font_description(_pangoLayout, desc.cPointer)
     }
 
     private func getBaseline(_ lineIter: OpaquePointer) -> Double {
@@ -252,11 +250,16 @@ extension TextLayout: CustomStringConvertible {
 //=============
 
 internal enum Pango {
+    typealias PangoUnit = Int32
+
+    public static let scaleI: Int32 = Int32(PANGO_SCALE)
     public static let scaleF: Float = Float(PANGO_SCALE)
     public static let scaleD: Double = Double(PANGO_SCALE)
 
     public class FontMap {
         private var _pangoFontMap: UnsafeMutablePointer<PangoFontMap>? = nil
+
+        private var _resolution: Double = Double(BApplication.shared.logicalDPI.rawValue)
 
         public static var current: Pango.FontMap {
             if BApplication.shared.pangoFontMap == nil {
@@ -269,8 +272,19 @@ internal enum Pango {
             return _pangoFontMap
         }
 
+        public var resolution: Double {
+            get { _resolution }
+            set {
+                _resolution = newValue
+
+                pango_ft2_font_map_set_resolution(OpaquePointer(_pangoFontMap), newValue, newValue)
+            }
+        }
+
         private init() {
             _pangoFontMap = pango_ft2_font_map_new()
+
+            self.resolution = Double(BApplication.shared.logicalDPI.rawValue)
         }
 
         deinit {
@@ -282,7 +296,7 @@ internal enum Pango {
     public class FontDescription {
         private var _ptr: OpaquePointer!
         private var _family: String = ""
-        private var _size: Float = 1.0
+        private var _size: PangoUnit = 9 * Pango.scaleI
 
         public var cPointer: OpaquePointer {
             _ptr
@@ -296,11 +310,13 @@ internal enum Pango {
             }
         }
 
-        public var size: Float {
+        public var size: PangoUnit {
             get { _size }
             set {
                 _size = newValue
-                pango_font_description_set_absolute_size(_ptr, Double(_size))
+                // pango_font_description_set_absolute_size(_ptr, Double(_size))
+                Logger.debug("pango size: \(_size)")
+                pango_font_description_set_size(_ptr, Int32(_size))
             }
         }
 

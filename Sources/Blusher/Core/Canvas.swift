@@ -99,10 +99,15 @@ public class Canvas {
         sb_glyph_block_set_baseline(sbBlock, Float(block.baseline))
         for run in block.runs {
             let font = run.font
-            var sbFont = sb_font_t(path: nil, ttc_index: Int32(font.ttcIndex), size: font.size)
+            var sbFont = sb_font_t(
+                path: nil,
+                ttc_index: Int32(font.ttcIndex),
+                size: Float(font.pixelSize)
+            )
             font.path.withCString { cStr in
                 sbFont.path = cStr
             }
+            Logger.debug("font size: \(font.size)")
             let sbRun = sb_glyph_run_new(UInt32(run.count), &sbFont)
             for idx in 0..<run.count {
                 sb_glyph_run_glyphs(sbRun)[idx] = run.glyphs[idx]

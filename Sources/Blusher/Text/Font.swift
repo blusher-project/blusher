@@ -16,6 +16,10 @@ public struct Font {
     public var ttcIndex: Int
     public var size: Float
 
+    public var pixelSize: Double {
+        Double(self.size) * Double(BApplication.shared.logicalDPI.rawValue) / 72.0
+    }
+
     internal init() {
         self.family = ""
         self.path = ""

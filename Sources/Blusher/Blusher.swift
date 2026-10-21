@@ -22,3 +22,25 @@ public enum BlusherHelper {
         print("[\(sec).\(padded)] - \(message)")
     }
 }
+
+public enum LogicalDPI {
+    case x96
+    case mac72
+    case custom(Int)
+
+    var rawValue: Int {
+        switch self {
+        case .x96: return 96
+        case .mac72: return 72
+        case .custom(let value): return value
+        }
+    }
+
+    init(rawValue: Int) {
+        switch rawValue {
+        case 96: self = .x96
+        case 72: self = .mac72
+        default: self = .custom(rawValue)
+        }
+    }
+}

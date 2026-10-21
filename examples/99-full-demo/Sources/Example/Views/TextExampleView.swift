@@ -14,7 +14,7 @@ class TextExampleView: BView {
         )
         textArea.color = Color(r: 0.8, g: 0.8, b: 0.8, a: 1.0)
 
-        let font = FontLibrary.shared.findFont(family: "serif", size: 12.5)
+        let font = FontLibrary.shared.findFont(family: "serif", size: 10.0)
 
         let textView = BTextView(lorem, font!, parent: textArea)
         textView.text = lorem

@@ -179,7 +179,11 @@ open class BView {
                 sb_glyph_block_set_baseline(self?._sbGlyphBlock, Float(glyphBlock.baseline))
                 for run in glyphBlock.runs {
                     let font = run.font
-                    var sbFont = sb_font_t(path: nil, ttc_index: Int32(font.ttcIndex), size: font.size)
+                    var sbFont = sb_font_t(
+                        path: nil,
+                        ttc_index: Int32(font.ttcIndex),
+                        size: Float(font.pixelSize)
+                    )
                     font.path.withCString { cStr in
                         sbFont.path = cStr
                     }
@@ -195,6 +199,14 @@ open class BView {
         }
     }
 
+    // TODO: Maybe private or internal?
+    public var visualGeometry: Rect {
+        get { rectFromSbRect(sb_view_geometry(_sbView)) }
+        set {
+            sb_view_set_geometry(_sbView, rectToSbRect(newValue))
+        }
+    }
+
     public var geometry: Rect {
         get {
             return _geometry
@@ -205,20 +217,15 @@ open class BView {
             }
 
             _geometry = newValue
-            var sbRect = sb_rect_t(
-                position: sb_point_t(
-                    x: Float(newValue.position.x), y: Float(newValue.position.y)
-                ),
-                size: sb_size_t(
-                    width: Float(newValue.size.width), height: Float(newValue.size.height)
-                )
-            )
-            if let preferredSize = self.preferredSize {
-                sbRect.size.width = Float(preferredSize.width)
-                sbRect.size.height = Float(preferredSize.height)
-            }
 
-            sb_view_set_geometry(_sbView, sbRect)
+            if let preferredSize = self.preferredSize {
+                var rect = newValue
+                rect.size.width = preferredSize.width
+                rect.size.height = preferredSize.height
+                self.visualGeometry = rect
+            } else {
+                self.visualGeometry = newValue
+            }
 
             layingOut()
         }

@@ -27,6 +27,7 @@ func paintToSbPaint(_ paint: Paint) -> OpaquePointer {
     sb_paint_set_stroke_color(sbPaint, &strokeColor)
     sb_paint_set_stroke_width(sbPaint, strokeWidth)
     sb_paint_set_stroke_sizing(sbPaint, sbStrokeSizing)
+    sb_paint_set_antialiasing(sbPaint, paint.antialiasing)
 
     return sbPaint!
 }

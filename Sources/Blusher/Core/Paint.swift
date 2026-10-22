@@ -11,6 +11,7 @@ public struct Paint {
     public var strokeColor: Color = .black
     public var strokeWidth: Float = 0.0
     public var strokeSizing: StrokeSizing = .inner
+    public var antialiasing: Bool = true
 
     public init() {
     }

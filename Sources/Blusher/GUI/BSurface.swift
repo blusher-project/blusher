@@ -16,17 +16,31 @@ public enum ResizeEdge {
 }
 
 open class BSurface {
+    //==============================
+    // Private Stored Properties
+    //==============================
     private var _sbSurface: OpaquePointer
     private var _role: (any RoleSurface)? = nil
     private var _size: SizeI = SizeI(width: 10, height: 10)
     private var _scale: Float = 1.0
+    private weak var _hoveredView: BView? = nil
 
     private var _preferredScaleEventListener: EventListener!
     private var _timeoutEventListener: EventListener!
 
+    //==============================
+    // Internal Stored Properties
+    //==============================
     internal var _timeoutHandler: ((TimerEvent) -> Void)? = nil
 
+    //==============================
+    // Public Stored Properties
+    //==============================
     public var onTimeout: EventHandler<TimerEvent>? = nil
+
+    //===============================
+    // Public Computed Properties
+    //===============================
 
     // TODO: Change this to internal when the test done.
     public var rootViewPointer: OpaquePointer {
@@ -100,6 +114,17 @@ open class BSurface {
             _scale = newValue
 
             sb_surface_set_scale(_sbSurface, _scale)
+        }
+    }
+
+    //===============================
+    // Internal Computed Properties
+    //===============================
+
+    internal var hoveredView: BView? {
+        get { _hoveredView }
+        set {
+            _hoveredView = newValue
         }
     }
 

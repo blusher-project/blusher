@@ -108,7 +108,6 @@ public class Canvas {
             font.path.withCString { cStr in
                 sbFont.path = cStr
             }
-            Logger.debug("font size: \(font.size)")
             let sbRun = sb_glyph_run_new(UInt32(run.count), &sbFont)
             for idx in 0..<run.count {
                 sb_glyph_run_glyphs(sbRun)[idx] = run.glyphs[idx]

@@ -33,6 +33,7 @@ open class BWindow: BToplevel {
     private var _menuBar: BMenuBar? = nil
     private var _body: BView!
     private var _noDecoration: Bool = false
+    private var _tooltip: BTooltip? = nil
 
     public var body: BView {
         return _body

@@ -44,3 +44,5 @@ public enum LogicalDPI {
         }
     }
 }
+
+public typealias TimerID = Int

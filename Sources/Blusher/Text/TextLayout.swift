@@ -315,7 +315,6 @@ internal enum Pango {
             set {
                 _size = newValue
                 // pango_font_description_set_absolute_size(_ptr, Double(_size))
-                Logger.debug("pango size: \(_size)")
                 pango_font_description_set_size(_ptr, Int32(_size))
             }
         }

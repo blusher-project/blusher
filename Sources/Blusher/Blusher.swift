@@ -46,3 +46,14 @@ public enum LogicalDPI {
 }
 
 public typealias TimerID = Int
+
+public protocol TooltipAvailable {
+    var tooltipText: String? { get set }
+}
+
+public extension TooltipAvailable {
+    var tooltipText: String? {
+        get { nil }
+        set {}
+    }
+}

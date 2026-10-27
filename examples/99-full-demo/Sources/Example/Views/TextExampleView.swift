@@ -46,17 +46,24 @@ class TextExampleView: BView {
         loremIpsum.onPointerClick += { evt in
             textView.text = lorem
         }
+        loremIpsum.tooltipText = "Show Lorem ipsum text"
+
         let hindiButton = BButton("हिन्दी", parent: buttonPanel)
         hindiButton.onPointerClick += { evt in
             textView.text = hindi
         }
+        hindiButton.tooltipText = "Show Hindi sample text"
+
         let arabicButton = BButton("العربية", parent: buttonPanel)
         arabicButton.onPointerClick += { evt in
             textView.text = arabic
         }
+        arabicButton.tooltipText = "Show Arabic sample text"
+
         let japaneseButton = BButton("日本語", parent: buttonPanel)
         japaneseButton.onPointerClick += { evt in
             textView.text = japanese
         }
+        japaneseButton.tooltipText = "Show Japanese sample text"
     }
 }

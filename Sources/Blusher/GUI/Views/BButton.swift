@@ -3,6 +3,7 @@ open class BButton: BView {
     private var _textLayout: TextLayout
     private var _label: BView!
     private var _pressed: Bool = false
+    private var _tooltipText: String? = nil
 
     public var text: String {
         get { _text }
@@ -76,5 +77,12 @@ open class BButton: BView {
     public override func pointerReleaseEvent(_ event: PointerEvent) {
         _pressed = false
         self.surface?.update()
+    }
+}
+
+extension BButton: TooltipAvailable {
+    public var tooltipText: String? {
+        get { _tooltipText }
+        set { _tooltipText = newValue }
     }
 }

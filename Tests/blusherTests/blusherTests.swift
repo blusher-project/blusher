@@ -12,6 +12,27 @@ import Testing
     assert(rect1 == rect2)
 }
 
+@Test func rectContains() async throws {
+    // Test case 1.
+    do {
+        let r1 = Rect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
+        let p1 = Point(x: 100.0, y: 100.0)
+
+        let res = r1.contains(point: p1)
+        #expect(res == true)
+    }
+
+    // Test case 2.
+    do {
+        let r1 = Rect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
+        let p1 = Point(x: 100.1, y: 100.1)
+
+        let res = r1.contains(point: p1)
+        #expect(res == false)
+    }
+}
+
+
 @Test func colorEquatable() async throws {
     let white = Color(r: 1.0, g: 1.0, b: 1.0, a: 1.0)
     let black = Color(r: 0.0, g: 0.0, b: 0.0, a: 1.0)

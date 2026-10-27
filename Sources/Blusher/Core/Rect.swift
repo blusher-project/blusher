@@ -39,6 +39,27 @@ public struct Rect: Equatable {
     }
 }
 
+public extension Rect {
+    func contains(point: Point) -> Bool {
+        // Check top-left.
+        if (point.x < self.position.x || point.y < self.position.y) {
+            return false;
+        }
+        // Check bottom-right.
+        if (point.x > self.position.x + self.size.width ||
+            point.y > self.position.y + self.size.height) {
+            return false;
+        }
+        // Check width and height.
+        if (point.x <= self.position.x + self.size.width &&
+            point.y <= self.position.y + self.size.height) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
 extension Rect: CustomStringConvertible {
     public var description: String {
         return "Blusher.Rect(\(x), \(y) \(width)x\(height))"

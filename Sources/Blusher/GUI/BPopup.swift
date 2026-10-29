@@ -7,12 +7,23 @@ public enum PopupGrab {
 
 open class BPopup: BDesktopSurface {
     private var _grabbable: Bool = false
+    private var _position: Point = Point(x: 0.0, y: 0.0)
 
     public var grabbable: Bool {
         get { _grabbable }
         set {
             _grabbable = newValue
             sb_desktop_surface_popup_set_grabbable(super.cPointer, newValue)
+        }
+    }
+
+    public var position: Point {
+        get { _position }
+        set {
+            _position = newValue
+
+            var sbPoint = pointToSbPoint(newValue)
+            sb_desktop_surface_popup_set_position(super.cPointer, &sbPoint)
         }
     }
 

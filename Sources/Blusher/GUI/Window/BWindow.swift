@@ -269,6 +269,10 @@ open class BWindow: BToplevel {
             if tooltipText != "" {
                 print("Tooltip: \(tooltipText)")
                 _tooltip = BTooltip(for: view!, parent: self)
+                // Set position.
+                if let targetView = view {
+                    _tooltip?.position = targetView.absolutePosition
+                }
                 _tooltip?.show()
             }
         }

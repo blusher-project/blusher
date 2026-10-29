@@ -26,6 +26,10 @@ open class BWindow: BToplevel {
         }
     }
 
+    //===============================
+    // Private Stored Properties
+    //===============================
+
     private var _shadow: BWindowShadow!
     private var _resize: BWindowResize!
     private var _border: BWindowBorder!
@@ -34,10 +38,19 @@ open class BWindow: BToplevel {
     private var _body: BView!
     private var _noDecoration: Bool = false
     private var _tooltip: BTooltip? = nil
+    private var _tooltipTimerID: Int = -1
+
+    //===============================
+    // Public Computed Properties
+    //===============================
 
     public var body: BView {
         return _body
     }
+
+    //===============================
+    // Private Computed Properties
+    //===============================
 
     private var _wmGeometry: RectI {
         if self.noDecoration {
@@ -138,6 +151,10 @@ open class BWindow: BToplevel {
         }
     }
 
+    //=================
+    // Public Init
+    //=================
+
     public init(_ parent: BWindow? = nil) {
         super.init(parent: parent)
 
@@ -165,12 +182,26 @@ open class BWindow: BToplevel {
 
         // Window's body.
         _body = BView(surface: super.surface, geometry: _bodyGeometry)
+
+        self.postEvents()
     }
+
+    //===========
+    // Deinit
+    //===========
+
+    //====================
+    // Internal Methods
+    //====================
 
     internal func setMenuBar(_ menuBar: BMenuBar) {
         _menuBar = menuBar
         self.updateGeometries()
     }
+
+    //===================
+    // Private Methods
+    //===================
 
     private func calculateShadowSize(_ size: Size) -> Size {
         return Size(
@@ -190,6 +221,67 @@ open class BWindow: BToplevel {
         _menuBar?.geometry = _menuBarGeometry
         _body.geometry = _bodyGeometry
     }
+
+    private func hovered() {
+        self.surface.onHoveredViewChange += { event in
+            if self._tooltipTimerID != -1 {
+                BApplication.shared.removeTimer(for: self._tooltipTimerID)
+                self._tooltipTimerID = -1
+            }
+
+            self._tooltipTimerID = BApplication.shared.addTimer(
+                to: self.surface,
+                interval: 2000,
+                repeats: false
+            )
+        }
+    }
+
+    private func onHoveredViewChange(_ event: Event) {
+        if _tooltip != nil {
+            _tooltip!.hide()
+            _tooltip = nil
+        }
+
+        if _tooltipTimerID != -1 {
+            BApplication.shared.removeTimer(for: _tooltipTimerID)
+            _tooltipTimerID = -1
+        }
+
+        _tooltipTimerID = BApplication.shared.addTimer(
+            to: self.surface,
+            interval: 1200,
+            repeats: false
+        )
+    }
+
+    private func onTimeout(_ event: TimerEvent) {
+        if event.id == self._tooltipTimerID {
+            var tooltipText = ""
+            var view: BView? = self.surface.hoveredView
+            while let current = view {
+                if let text = (current as? TooltipAvailable)?.tooltipText {
+                    tooltipText = text
+                    break
+                }
+                view = current.parent
+            }
+            if tooltipText != "" {
+                print("Tooltip: \(tooltipText)")
+                _tooltip = BTooltip(for: view!, parent: self)
+                _tooltip?.show()
+            }
+        }
+    }
+
+    private func postEvents() {
+        self.surface.onHoveredViewChange += self.onHoveredViewChange
+        self.surface.onTimeout += self.onTimeout
+    }
+
+    //=====================
+    // Override Methods
+    //=====================
 
     public override func show() {
         super.show()

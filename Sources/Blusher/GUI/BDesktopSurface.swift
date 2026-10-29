@@ -85,6 +85,10 @@ open class BDesktopSurface: RoleSurface {
         }
     }
 
+    public func hide() {
+        sb_desktop_surface_hide(_sbDesktopSurface)
+    }
+
     private func addEventListeners() {
         let userData = Unmanaged.passUnretained(self).toOpaque()
 

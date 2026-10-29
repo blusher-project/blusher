@@ -20,6 +20,8 @@ open class BPopup: BDesktopSurface {
         super.init(role: .popup)
         var sbPoint = sb_point_t(x: Float(position.x), y: Float(position.y))
         sb_desktop_surface_popup_set_position(super.cPointer, &sbPoint)
+
+        sb_desktop_surface_set_parent(super.cPointer, parent.cPointer)
     }
 
     public func grab(for grab: PopupGrab) {

@@ -37,6 +37,7 @@ open class BSurface {
     // Public Stored Properties
     //==============================
     public var onTimeout: EventHandler<TimerEvent>? = nil
+    /* public */ internal var onHoveredViewChange: EventHandler<Event>? = nil
 
     //===============================
     // Public Computed Properties
@@ -125,6 +126,9 @@ open class BSurface {
         get { _hoveredView }
         set {
             _hoveredView = newValue
+
+            let event = Event(of: .pointerEnter) // .pointerEnter type is a dummy.
+            self.onHoveredViewChange?.invoke(event)
         }
     }
 

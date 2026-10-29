@@ -682,6 +682,7 @@ open class BView {
     }
 
     open func pointerEnterEvent(_ event: PointerEvent) {
+        // TODO: Move into `callPointerEnterEvent` method.
         self.surface?.hoveredView = self
 
         ToplevelStorage._uiSurface = self._surface

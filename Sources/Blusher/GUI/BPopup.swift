@@ -8,6 +8,7 @@ public enum PopupGrab {
 open class BPopup: BDesktopSurface {
     private var _grabbable: Bool = false
     private var _position: Point = Point(x: 0.0, y: 0.0)
+    private weak var _parent: BDesktopSurface? = nil
 
     public var grabbable: Bool {
         get { _grabbable }
@@ -22,15 +23,22 @@ open class BPopup: BDesktopSurface {
         set {
             _position = newValue
 
-            var sbPoint = pointToSbPoint(newValue)
+            var newPos = newValue
+            if let desktopSurface = _parent {
+                print(desktopSurface.wmGeometry)
+                newPos.x -= Double(desktopSurface.wmGeometry.x)
+                newPos.y -= Double(desktopSurface.wmGeometry.y)
+            }
+            var sbPoint = pointToSbPoint(newPos)
             sb_desktop_surface_popup_set_position(super.cPointer, &sbPoint)
         }
     }
 
     public init(at position: Point, _ parent: BDesktopSurface) {
+        _parent = parent
         super.init(role: .popup)
-        var sbPoint = sb_point_t(x: Float(position.x), y: Float(position.y))
-        sb_desktop_surface_popup_set_position(super.cPointer, &sbPoint)
+
+        self.position = position
 
         sb_desktop_surface_set_parent(super.cPointer, parent.cPointer)
     }

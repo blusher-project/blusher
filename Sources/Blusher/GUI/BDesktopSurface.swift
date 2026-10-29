@@ -26,8 +26,10 @@ open class BDesktopSurface: RoleSurface {
 
     public var wmGeometry: RectI {
         get {
-            // TODO: Impl.
-            return RectI(x: 0, y: 0, width: 0, height: 0)
+            if _wmGeometry == nil {
+                return RectI(x: 0, y: 0, width: 0, height: 0)
+            }
+            return _wmGeometry!
         }
         set {
             if _wmGeometry == newValue { return }

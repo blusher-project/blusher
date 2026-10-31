@@ -1,6 +1,11 @@
 public class BMenuBar: BView {
     private class View: BView {
+        private var _label: BLabel
+        private var _textLayout: TextLayout? = nil
+
         init(menuBar: BMenuBar, title: String) {
+            _label = BLabel(title, parent: menuBar)
+
             super.init(parent: menuBar, geometry: Rect(x: 0.0, y: 0.0, width: 1.0, height: 1.0))
             self.renderType = .text
             self.textLayout = TextLayout()
@@ -44,7 +49,7 @@ public class BMenuBar: BView {
 
         // Push children.
         self.menu.items.forEach { menuItem in
-            let _ = View(menuBar: self, title: menuItem.title)
+            let _ = BMenuBar.View(menuBar: self, title: menuItem.title)
         }
     }
 }

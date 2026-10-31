@@ -25,7 +25,6 @@ open class BPopup: BDesktopSurface {
 
             var newPos = newValue
             if let desktopSurface = _parent {
-                print(desktopSurface.wmGeometry)
                 newPos.x -= Double(desktopSurface.wmGeometry.x)
                 newPos.y -= Double(desktopSurface.wmGeometry.y)
             }

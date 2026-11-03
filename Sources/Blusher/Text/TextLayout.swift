@@ -1,4 +1,5 @@
 @_implementationOnly import Swingby
+internal import CFontconfig
 internal import CPango
 
 public class TextLayout {

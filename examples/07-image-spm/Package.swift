@@ -3,6 +3,9 @@
 
 import PackageDescription
 
+let tmpV6_4 = "\(Context.packageDirectory)/../../.build/out/Intermediates.noindex/"
+    + "blusher.build/Debug-linux-x86_64/Blusher-t.build/Objects-normal/x86_64"
+
 let package = Package(
     name: "example",
     dependencies: [
@@ -18,6 +21,7 @@ let package = Package(
             swiftSettings: [
                 .unsafeFlags(["-I../../.build/debug/Modules"]),
                 .unsafeFlags(["-I../../.build/release/Modules"]),
+                .unsafeFlags(["-I\(tmpV6_4)"]),
             ],
             linkerSettings: [
                 .linkedLibrary("Blusher"),
@@ -30,6 +34,7 @@ let package = Package(
             path: "Resources/ImageResources",
             swiftSettings: [
                 .unsafeFlags(["-I../../.build/debug/Modules"]),
+                .unsafeFlags(["-I\(tmpV6_4)"]),
             ],
             linkerSettings: [
                 .linkedLibrary("Blusher"),

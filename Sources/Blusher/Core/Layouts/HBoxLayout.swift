@@ -24,7 +24,8 @@ public struct HBoxLayout: Layout {
         var totalWidth: Double = 0.0
         for child in view.children {
             child.position = Point(x: totalWidth, y: child.position.y)
-            totalWidth += child.size.width + _spacing
+            let width = child.preferredSize?.width ?? child.size.width
+            totalWidth += width + _spacing
         }
     }
 }

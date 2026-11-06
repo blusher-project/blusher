@@ -8,6 +8,9 @@ public class Benchmark {
     }
 
     deinit {
+    }
+
+    public func end() {
         let duration = startTime.duration(to: .now)
         print("[\(string)] \(duration)")
     }

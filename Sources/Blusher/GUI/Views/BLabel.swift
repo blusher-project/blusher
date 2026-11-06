@@ -11,7 +11,10 @@ open class BLabel: BView {
     }
 
     public override var preferredSize: Size? {
-        _textLayout.lines[0].boundingRect.size
+        if _textLayout.lines.count <= 0 {
+            return nil
+        }
+        return _textLayout.lines[0].boundingRect.size
     }
 
     public init(_ text: String, parent: BView) {
@@ -27,14 +30,15 @@ open class BLabel: BView {
     }
 
     open override func paintEvent(_ event: Event) {
+        self.canvas?.clear(.transparent)
         var paint = Paint()
         paint.fillColor = .red
         paint.fillColor.a = 0.5
         let debugBg = Rect(
             x: 0.0,
             y: 0.0,
-            width: _textLayout.lines[0].boundingRect.width,
-            height: _textLayout.lines[0].boundingRect.height
+            width: _textLayout.lines.first?.boundingRect.width ?? 1.0,
+            height: _textLayout.lines.first?.boundingRect.height ?? 1.0
         )
         self.canvas?.drawRect(debugBg, paint)
         self.canvas?.drawTextLayout(_textLayout, Point(x: 0.0, y: 0.0))

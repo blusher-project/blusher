@@ -24,6 +24,7 @@ open class BTabView: BView {
     class TabButton: BView {
         private var _index: Int
         private var _title: String
+        private var _label: BLabel!
 
         internal var index: Int { _index }
 
@@ -33,9 +34,10 @@ open class BTabView: BView {
 
             super.init(parent: parent, geometry: Rect(x: 0.0, y: 0.0, width: 36.0, height: 24.0))
 
-            self.renderType = .text
-            self.textLayout = TextLayout()
-            self.textLayout?.text = title
+            _label = BLabel(title, parent: self)
+            // self.renderType = .text
+            // self.textLayout = TextLayout()
+            // self.textLayout?.text = title
         }
 
         override func pointerEnterEvent(_ event: PointerEvent) {
@@ -52,6 +54,9 @@ open class BTabView: BView {
             super.init(parent: parent)
 
             self.renderType = .canvas
+
+            self.layout = FillLayout()
+            self.layout?.insets = Insets(all: 3.0)
         }
 
         func setTabButtonGroup(_ buttonGroup: TabButtonGroup) {
@@ -116,13 +121,13 @@ open class BTabView: BView {
 
         _frameView = Frame(parent: self)
 
-        _tabButtons = TabButtonGroup()
-
-        _frameView.setTabButtonGroup(_tabButtons)
-
         _itemView = BView(parent: _frameView, geometry: self._itemViewGeometry)
         _itemView.color = .transparent
         _itemView.layout = FillLayout()
+
+        _tabButtons = TabButtonGroup()
+
+        _frameView.setTabButtonGroup(_tabButtons)
     }
 
     public func addItem(_ item: BTabViewItem) {
@@ -174,7 +179,7 @@ open class BTabView: BView {
     override open func resizeEvent(_ event: ResizeEvent) {
         // _frameView.size = event.size
         _tabButtons.size.width = event.size.width
-        _itemView.geometry = _itemViewGeometry
+        // _itemView.geometry = _itemViewGeometry
 
         self.layingOut()
 

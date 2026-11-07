@@ -471,6 +471,10 @@ open class BView {
         if let layout = _layout {
             layout.constraintFunction()
         }
+        // TODO: Just a temporary trick.
+        if let preferredSize = self.preferredSize {
+            self.visualGeometry = Rect(position: self.position, size: preferredSize)
+        }
     }
 
     private func addEventListeners() {

@@ -10,6 +10,16 @@ public class BTabViewItem {
 
 open class BTabView: BView {
     class TabButtonGroup: BView {
+        public override var preferredSize: Size? {
+            var total = 0.0
+
+            for button in self.children {
+                total += button.preferredSize?.width ?? 1.0
+            }
+
+            return Size(width: total, height: 24.0)
+        }
+
         override init() {
             super.init()
 
@@ -25,19 +35,33 @@ open class BTabView: BView {
         private var _index: Int
         private var _title: String
         private var _label: BLabel!
+        private weak var _buttonGroup: TabButtonGroup? = nil
 
         internal var index: Int { _index }
+
+        public override var preferredSize: Size? {
+            Size(
+                width: (_label?.preferredSize?.width ?? 1.0) + 4.0,
+                height: (_label?.preferredSize?.height ?? 24.0) + 4.0
+            )
+        }
 
         init(_ title: String, index: Int, parent: TabButtonGroup) {
             _index = index
             _title = title
+            _buttonGroup = parent
 
             super.init(parent: parent, geometry: Rect(x: 0.0, y: 0.0, width: 36.0, height: 24.0))
 
+            self.renderType = .canvas
+
             _label = BLabel(title, parent: self)
-            // self.renderType = .text
-            // self.textLayout = TextLayout()
-            // self.textLayout?.text = title
+
+            var layout = FlexboxLayout()
+            layout.flexDirection = .row
+            layout.alignItems = .center
+            layout.justifyContent = .center
+            self.layout = layout
         }
 
         override func pointerEnterEvent(_ event: PointerEvent) {
@@ -46,6 +70,23 @@ open class BTabView: BView {
 
         override func pointerClickEvent(_ event: PointerEvent) {
             super.pointerClickEvent(event)
+        }
+
+        override func paintEvent(_ event: Event) {
+            var paint = Paint()
+            paint.fillColor = .silver
+            paint.strokeColor = .gray
+            paint.strokeWidth = 3.0
+
+            let rrect = RoundedRect(
+                x: 0.0,
+                y: 0.0,
+                width: self.preferredSize?.width ?? 10.0,
+                height: self.preferredSize?.height ?? 10.0,
+                radii: Radii(all: 0.0)
+            )
+
+            self.canvas?.drawRoundedRect(rrect, paint)
         }
     }
 
@@ -57,10 +98,6 @@ open class BTabView: BView {
 
             self.layout = FillLayout()
             self.layout?.insets = Insets(all: 3.0)
-        }
-
-        func setTabButtonGroup(_ buttonGroup: TabButtonGroup) {
-            buttonGroup.parent = self
         }
 
         override func paintEvent(_ event: Event) {
@@ -118,7 +155,9 @@ open class BTabView: BView {
     }
 
     private var _tabButtonGroupPosition: Point {
-        let x = (self.size.width / 2.0) - (_tabButtons.size.width / 2.0)
+        let a = self.size.width / 2.0
+        let b = (_tabButtons.preferredSize?.width ?? 10.0) / 2.0
+        let x = a - b
         let y = 4.0
 
         return Point(x: x, y: y)

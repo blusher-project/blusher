@@ -63,7 +63,7 @@ public struct FlexboxLayout: Layout {
         guard let view = _view else { return }
 
         let ygRoot = YGNodeNew()
-        YGNodeStyleSetWidth(ygRoot, Float(view.geometry.width))
+        YGNodeStyleSetWidth(ygRoot, Float(view.preferredSize?.width ?? view.geometry.width))
         YGNodeStyleSetHeight(ygRoot, Float(view.geometry.height))
 
         YGNodeStyleSetFlexDirection(ygRoot,

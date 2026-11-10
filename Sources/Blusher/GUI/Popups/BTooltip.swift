@@ -8,7 +8,7 @@ open class BTooltip: BPopup {
         }
 
         public override var preferredSize: Size? {
-            if let labelSize = _label.preferredSize {
+            if let labelSize = _label?.preferredSize {
                 return Size(
                     width: labelSize.width + 8.0,
                     height: labelSize.height + 4.0
@@ -48,10 +48,10 @@ open class BTooltip: BPopup {
         _target
     }
 
-    public init(for target: BView, parent: BDesktopSurface) {
+    public init(for target: BView, parent: some SurfaceRole) {
         _target = target
 
-        super.init(at: Point(x: 0.0, y: 0.0), parent)
+        super.init(at: PointI(x: 0, y: 0), parent)
 
         _view = BTooltip.View(surface: self.surface)
     }

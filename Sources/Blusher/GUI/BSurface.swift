@@ -4,6 +4,11 @@ public protocol RoleSurface {
     var surface: BSurface { get }
 }
 
+public protocol SurfaceRole: AnyObject {
+    var surface: BSurface { get }
+    var roleName: String { get }
+}
+
 public enum ResizeEdge {
     case top
     case bottom
@@ -20,7 +25,7 @@ open class BSurface {
     // Private Stored Properties
     //==============================
     private var _sbSurface: OpaquePointer
-    private var _role: (any RoleSurface)? = nil
+    private var _role: (any SurfaceRole)? = nil
     private var _size: SizeI = SizeI(width: 10, height: 10)
     private var _scale: Float = 1.0
     private weak var _hoveredView: BView? = nil

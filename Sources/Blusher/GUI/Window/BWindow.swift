@@ -274,7 +274,7 @@ open class BWindow: BToplevel {
                     let position = targetView.absolutePosition
                     // position.x -= BWindowShadow.thickness
                     // position.y -= BWindowShadow.thickness
-                    _tooltip?.position = position
+                    _tooltip?.position = PointI(x: Int(position.x), y: Int(position.y))
                 }
                 _tooltip?.show()
             }

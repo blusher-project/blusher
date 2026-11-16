@@ -13,14 +13,14 @@ public class DBusConnection {
     // Private Stored Properties
     //==============================
     private var _busPtr: OpaquePointer? = nil
-    private var _busType: DBus.BusType
+    private var _busType: DBusBusType
     private var _name: String? = nil
     private var _objects: [DBusObject] = []
 
     //==============================
     // Public Computed Properties
     //==============================
-    public var busType: DBus.BusType { _busType }
+    public var busType: DBusBusType { _busType }
 
     public var name: String? {
         _name
@@ -29,7 +29,7 @@ public class DBusConnection {
     //=================
     // Public Inits
     //=================
-    public init(type busType: DBus.BusType) {
+    public init(type busType: DBusBusType) {
         _busType = busType
 
         switch busType {
@@ -41,7 +41,7 @@ public class DBusConnection {
         if _busPtr == nil { print("Failed to connect to the bus.") }
     }
 
-    public init(type busType: DBus.BusType, address: String) {
+    public init(type busType: DBusBusType, address: String) {
         _busType = busType
 
         if busType == .system {

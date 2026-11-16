@@ -104,7 +104,7 @@ public class DBusMessage {
     // Private Static Methods
     //===========================
 
-    private static func getType(_ cChar: CChar) -> DBusSignature {
+    private static func getType(_ cChar: CChar) -> DBusSignatureOld {
         if cChar == CChar(bitPattern: UInt8(ascii: "s")) {
             return .string
         } else {
@@ -144,7 +144,7 @@ public class DBusMessage {
         } else {
             // Ok.
             print("Ok")
-            if Self.getType(typeOut).rawValue == DBusSignature.string.rawValue {
+            if Self.getType(typeOut).rawValue == DBusSignatureOld.string.rawValue {
                 return DBusArgument(.string, Self.getString(val!))
             }
         }

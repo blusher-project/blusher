@@ -1,11 +1,34 @@
 internal import CSdBus
 
+typealias SdBusMessageHandler = @convention(c) (
+    OpaquePointer?,                     // sd_bus_message
+    UnsafeMutableRawPointer?,           // void *user_data
+    UnsafeMutablePointer<sd_bus_error>? // sd_bus_error
+) -> Int32
+
+public typealias DBusMethodHandler = (String) -> DBusMessage
+
 public class DBusConnection {
+    //==============================
+    // Private Stored Properties
+    //==============================
     private var _busPtr: OpaquePointer? = nil
     private var _busType: DBus.BusType
+    private var _name: String? = nil
+    private var _objects: [DBusObject] = []
 
+    //==============================
+    // Public Computed Properties
+    //==============================
     public var busType: DBus.BusType { _busType }
 
+    public var name: String? {
+        _name
+    }
+
+    //=================
+    // Public Inits
+    //=================
     public init(type busType: DBus.BusType) {
         _busType = busType
 
@@ -18,8 +41,43 @@ public class DBusConnection {
         if _busPtr == nil { print("Failed to connect to the bus.") }
     }
 
+    public init(type busType: DBus.BusType, address: String) {
+        _busType = busType
+
+        if busType == .system {
+            Logger.warn("System bus with custom address not supported yet.")
+        }
+
+        var err: Int32 = 0
+        err = sd_bus_new(&_busPtr)
+        if err < 0 {
+            Logger.warn("sd_bus_new failed")
+        }
+        err = sd_bus_set_address(_busPtr, address)
+        if err < 0 {
+            Logger.warn("sd_bus_set_address failed")
+        }
+        err = sd_bus_start(_busPtr)
+        if err < 0 {
+            Logger.warn("sd_bus_start failed. error: \(err)")
+        }
+    }
+
+    //============
+    // Deinit
+    //============
     deinit {
         sd_bus_close(_busPtr)
+    }
+
+    public func requestName(_ name: String) throws {
+        let ret = sd_bus_request_name(_busPtr, name, 0)
+
+        if ret < 0 {
+            throw DBusError.unknown
+        }
+
+        _name = name
     }
 
     public func callMethod(
@@ -74,9 +132,9 @@ public class DBusConnection {
     public func callMethod(_ message: DBusMessage, _ method: String) -> DBusMessage? {
         do {
             let reply = try self.callMethod(
-                message.destination,
-                message.path,
-                message.interface,
+                message.destination!,
+                message.path!,
+                message.interface!,
                 method
             )
             return reply
@@ -84,5 +142,59 @@ public class DBusConnection {
             print("DBusConnection.callMethod failed!")
             return nil
         }
+    }
+
+    public func addMethod(_ path: String, _ handler: @escaping DBusMethodHandler) {
+        let object = DBusObject(path, handler);
+        let userData = Unmanaged.passUnretained(object).toOpaque()
+
+        let callback = { msg, userData, error in
+            if let userData = userData {
+                let instance = Unmanaged<DBusObject>.fromOpaque(userData).takeUnretainedValue()
+
+                let path = instance.path
+                let msg = instance.handler(path)
+            }
+            return 0
+        } as SdBusMessageHandler
+        object.callback = callback
+
+        let ret = sd_bus_add_object(_busPtr, nil, path, callback, userData)
+
+        _objects.append(object)
+    }
+
+    public func addSignal() {
+        //
+    }
+}
+
+extension DBusConnection: CustomStringConvertible {
+    public var description: String {
+        // Get type.
+        let t = self.busType == .session ? "Session" : "System"
+
+        return "DBusConnection(\(t))"
+    }
+}
+
+
+//====================
+// Implementation
+//====================
+internal class DBusObject {
+    public var slot: OpaquePointer?
+    public var path: String
+    public var handler: DBusMethodHandler
+    public var callback: SdBusMessageHandler?
+    public var userData: UnsafeMutableRawPointer?
+
+    public init(
+        _ path: String,
+        _ handler: @escaping DBusMethodHandler
+    ) {
+        self.slot = nil
+        self.path = path
+        self.handler = handler
     }
 }

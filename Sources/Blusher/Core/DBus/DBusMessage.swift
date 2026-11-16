@@ -7,6 +7,8 @@ public enum DBusMessageType {
     case signal
 }
 
+public typealias DBusMessageHandler = (DBusMessage) -> Void
+
 public class DBusMessage {
     private var _msgPtr: OpaquePointer? = nil
     private var _type: DBusMessageType
@@ -15,18 +17,22 @@ public class DBusMessage {
     private var _interface: String? = nil
     private var _arguments: [DBusArgument] = []
 
-    public var destination: String {
-        get { _destination ?? "" }
+    public var type: DBusMessageType {
+        _type
+    }
+
+    public var destination: String? {
+        get { _destination }
         set { _destination = newValue }
     }
 
-    public var path: String {
-        get { _path ?? "" }
+    public var path: String? {
+        get { _path }
         set { _path = newValue }
     }
 
-    public var interface: String {
-        get { _interface ?? "" }
+    public var interface: String? {
+        get { _interface }
         set { _interface = newValue }
     }
 
@@ -42,9 +48,35 @@ public class DBusMessage {
         _type = .error
     }
 
+    internal init(cPointer: OpaquePointer) {
+        _msgPtr = cPointer
+
+        // Get type.
+        var type: UInt8 = 0
+        let _ = sd_bus_message_get_type(_msgPtr, &type)
+
+        // Set type.
+        if type == SD_BUS_MESSAGE_METHOD_CALL {
+            _type = .methodCall
+        } else if type == SD_BUS_MESSAGE_METHOD_RETURN {
+            _type = .methodReturn
+        } else if type == SD_BUS_MESSAGE_METHOD_ERROR {
+            _type = .error
+        } else if type == SD_BUS_MESSAGE_SIGNAL {
+            _type = .signal
+        } else {
+            Logger.warn("DBusMessage - Invalid type (\(type))")
+            _type = .error
+        }
+    }
+
     public init(type: DBusMessageType) {
         _type = type
     }
+
+    //===========================
+    // Internal Static Methods
+    //===========================
 
     internal static func makeFromReply(_ ptr: OpaquePointer) -> DBusMessage {
         let msg = DBusMessage()
@@ -97,7 +129,13 @@ public class DBusMessage {
         err = sd_bus_message_read_basic(msgPtr, typeOut, &val)
         if err < 0 {
             // Failed.
-            print("Failed")
+            if err == -EINVAL {
+                Logger.error("DBusMessage.read - Failed: -EINVAL")
+            } else if err == -ENXIO {
+                Logger.error("DBusMessage.read - Failed: -ENXIO")
+            } else if err == -EBADMSG {
+                Logger.error("DBusMessage.read - Failed: -EBADMSG")
+            }
             return nil
         } else if err == 0 {
             // End.

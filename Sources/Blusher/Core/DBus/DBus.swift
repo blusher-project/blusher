@@ -5,7 +5,7 @@ public enum DBusBusType {
     case system
 }
 
-public enum DBusBasicType {
+public enum DBusType {
     case byte
     case boolean
     case int16
@@ -19,9 +19,6 @@ public enum DBusBasicType {
     case string
     case objectPath
     case signature
-}
-
-public enum DBusContainerType {
     case array
     case `struct`
     case variant

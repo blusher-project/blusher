@@ -3,9 +3,9 @@ public class DBusArgument {
     // Old API
     //=================
     public var signature: DBusSignatureOld
-    public var value: Any
+    public var value: DBusValue
 
-    public init(_ signature: DBusSignatureOld, _ value: Any) {
+    public init(_ signature: DBusSignatureOld, _ value: DBusValue) {
         if Self.validate(signature, value) == false {
             self.signature = .invalid
             self.value = false
@@ -28,31 +28,69 @@ public class DBusArgument {
     //================
     // New API
     //================
-    public init(_ value: String) {
+    public init(_ value: DBusValue) {
         // Old compatibility
         self.signature = .string
+
         self.value = value
     }
 }
 
-public protocol DBusValue {}
+public protocol DBusValue {
+    var dbusType: DBusType { get }
+}
+
 public protocol DBusBasicValue: DBusValue, Hashable {}
 
-extension UInt8: DBusBasicValue {}
-extension Bool: DBusBasicValue {}
-extension Int16: DBusBasicValue {}
-extension Int32: DBusBasicValue {}
-extension Int64: DBusBasicValue {}
-extension UInt16: DBusBasicValue {}
-extension UInt32: DBusBasicValue {}
-extension UInt64: DBusBasicValue {}
-extension Double: DBusBasicValue {}
+extension UInt8: DBusBasicValue {
+    public var dbusType: DBusType { .byte }
+}
+extension Bool: DBusBasicValue {
+    public var dbusType: DBusType { .boolean }
+}
+extension Int16: DBusBasicValue {
+    public var dbusType: DBusType { .int16 }
+}
+extension Int32: DBusBasicValue {
+    public var dbusType: DBusType { .int32 }
+}
+extension Int64: DBusBasicValue {
+    public var dbusType: DBusType { .int64 }
+}
+extension UInt16: DBusBasicValue {
+    public var dbusType: DBusType { .uint16 }
+}
+extension UInt32: DBusBasicValue {
+    public var dbusType: DBusType { .uint32 }
+}
+extension UInt64: DBusBasicValue {
+    public var dbusType: DBusType { .uint64 }
+}
+extension Double: DBusBasicValue {
+    public var dbusType: DBusType { .double }
+}
 // extension Fd
-extension String: DBusBasicValue {}
+extension String: DBusBasicValue {
+    public var dbusType: DBusType { .string }
+}
 // extension ObjectPath
 // extension Signature
-extension Array<DBusValue>: DBusContainerValue {}
-// extension Dictionary<DBusBasicValue, DBusValue>: DBusValue {}
+extension Array: DBusValue where Element: DBusValue {
+    public var dbusType: DBusType { .array }
+}
+extension Dictionary: DBusValue where Key: DBusBasicValue, Value: DBusValue {
+    public var dbusType: DBusType { .dictEntry }
+}
+
+public struct DBusStruct<each T: DBusValue>: DBusValue {
+    public var dbusType: DBusType { .struct }
+
+    public var values: (repeat each T)
+
+    public init(_ values: (repeat each T)) {
+        self.values = values
+    }
+}
 
 extension DBusArgument: CustomStringConvertible {
     public var description: String {

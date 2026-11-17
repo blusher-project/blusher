@@ -51,11 +51,9 @@ public struct DBusInterfaceBuilder {
 public protocol DBusEntry {}
 
 public struct DBusMethod: DBusEntry {
-    public typealias Arg = DBusArgument
-
     public var name: String
 
-    public init(name: String, in: Arg, out: Arg) {
+    public init(name: String, in: DBusSignature, out: DBusSignature) {
         self.name = name
     }
 }
@@ -74,8 +72,8 @@ internal enum GrammerTest {
     static func test() {
         let path: some DBusPathProtocol = DBusEntryPath("/org/example/Test") {
             DBusEntryInterface(name: "org.example.Test") {
-                DBusMethod(name: "SayHello")
-                DBusMethod(name: "SayGoodbye")
+                DBusMethod(name: "SayHello", in: "", out: "s")
+                DBusMethod(name: "SayGoodbye", in: "", out: "s")
             }
         }
     }

@@ -17,6 +17,9 @@ public class DBusConnection {
     private var _name: String? = nil
     private var _objects: [DBusObject] = []
 
+    // bl_sd_bus_entry_t
+    private var _entries: [OpaquePointer] = []
+
     //==============================
     // Public Computed Properties
     //==============================
@@ -164,8 +167,8 @@ public class DBusConnection {
         _objects.append(object)
     }
 
-    public func addSignal() {
-        //
+    public func registerEntry(_ entry: some DBusPathProtocol) {
+        let count = entry.count
     }
 }
 

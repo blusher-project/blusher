@@ -5,7 +5,7 @@ public enum DBusBusType {
     case system
 }
 
-public enum DBusType {
+public indirect enum DBusType {
     case byte
     case boolean
     case int16
@@ -19,10 +19,10 @@ public enum DBusType {
     case string
     case objectPath
     case signature
-    case array
+    case array(DBusType)
     case `struct`
     case variant
-    case dictEntry
+    case dictEntry(DBusType, DBusType)
 }
 
 public struct DBusSignatureOld: Sendable {

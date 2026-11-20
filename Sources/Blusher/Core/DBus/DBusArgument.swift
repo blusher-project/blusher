@@ -37,53 +37,57 @@ public class DBusArgument {
 }
 
 public protocol DBusValue {
-    var dbusType: DBusType { get }
+    static var dbusType: DBusType { get }
 }
 
 public protocol DBusBasicValue: DBusValue, Hashable {}
 
 extension UInt8: DBusBasicValue {
-    public var dbusType: DBusType { .byte }
+    public static var dbusType: DBusType { .byte }
 }
 extension Bool: DBusBasicValue {
-    public var dbusType: DBusType { .boolean }
+    public static var dbusType: DBusType { .boolean }
 }
 extension Int16: DBusBasicValue {
-    public var dbusType: DBusType { .int16 }
+    public static var dbusType: DBusType { .int16 }
 }
 extension Int32: DBusBasicValue {
-    public var dbusType: DBusType { .int32 }
+    public static var dbusType: DBusType { .int32 }
 }
 extension Int64: DBusBasicValue {
-    public var dbusType: DBusType { .int64 }
+    public static var dbusType: DBusType { .int64 }
 }
 extension UInt16: DBusBasicValue {
-    public var dbusType: DBusType { .uint16 }
+    public static var dbusType: DBusType { .uint16 }
 }
 extension UInt32: DBusBasicValue {
-    public var dbusType: DBusType { .uint32 }
+    public static var dbusType: DBusType { .uint32 }
 }
 extension UInt64: DBusBasicValue {
-    public var dbusType: DBusType { .uint64 }
+    public static var dbusType: DBusType { .uint64 }
 }
 extension Double: DBusBasicValue {
-    public var dbusType: DBusType { .double }
+    public static var dbusType: DBusType { .double }
 }
 // extension Fd
 extension String: DBusBasicValue {
-    public var dbusType: DBusType { .string }
+    public static var dbusType: DBusType { .string }
 }
 // extension ObjectPath
 // extension Signature
 extension Array: DBusValue where Element: DBusValue {
-    public var dbusType: DBusType { .array }
+    public static var dbusType: DBusType {
+        .array(Element.dbusType)
+    }
 }
 extension Dictionary: DBusValue where Key: DBusBasicValue, Value: DBusValue {
-    public var dbusType: DBusType { .dictEntry }
+    public static var dbusType: DBusType {
+        .dictEntry(Key.dbusType, Value.dbusType)
+    }
 }
 
 public struct DBusStruct<each T: DBusValue>: DBusValue {
-    public var dbusType: DBusType { .struct }
+    public static var dbusType: DBusType { .struct }
 
     public var values: (repeat each T)
 

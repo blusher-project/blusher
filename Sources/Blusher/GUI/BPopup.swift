@@ -10,7 +10,7 @@ open class BPopup: SurfaceRole {
     private var _surface: BSurface
     private var _grabbable: Bool = false
     private var _position: PointI = PointI(x: 0, y: 0)
-    private weak var _parent: any SurfaceRole? = nil
+    private weak var _parent: (any SurfaceRole)? = nil
 
     public var grabbable: Bool {
         get { _grabbable }

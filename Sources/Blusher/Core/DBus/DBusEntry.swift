@@ -2,9 +2,10 @@ internal import CSdBus
 
 public protocol DBusPathProtocol {
     var count: Int { get }
+    var value: String { get }
 }
 
-public struct DBusEntryPath<each I: DBusInterfaceProtocol>: DBusPathProtocol {
+public struct DBusPath<each I: DBusInterfaceProtocol>: DBusPathProtocol {
     public var value: String
     public var interfaces: (repeat each I)
 
@@ -24,6 +25,22 @@ public struct DBusEntryPath<each I: DBusInterfaceProtocol>: DBusPathProtocol {
         for interface in repeat (each self.interfaces) {
             builder.interfaceBegin(name: interface.name)
             // let entries = interface.entries
+            for member in interface.members {
+                switch member {
+                case let method as DBusMethod:
+                    builder.methodBegin(name: method.name)
+                    for arg in method.inputArguments {
+                        builder.arg(name: arg.name, type: "T", direction: "in")
+                    }
+                    for arg in method.outputArguments {
+                        builder.arg(name: arg.name, type: "T", direction: "out")
+                    }
+                    builder.methodEnd()
+                default:
+                    Void()
+                }
+            }
+            builder.interfaceEnd()
         }
 
         builder.nodeEnd()
@@ -42,14 +59,23 @@ public struct DBusEntryPath<each I: DBusInterfaceProtocol>: DBusPathProtocol {
 
 public protocol DBusInterfaceProtocol {
     var name: String { get }
+    var members: [DBusMember] { get }
 }
 
-public struct DBusEntryInterface<each E: DBusEntry>: DBusInterfaceProtocol {
+public struct DBusEntryInterface<each E: DBusMember>: DBusInterfaceProtocol {
     public var name: String
-    public var entries: (repeat each E)
+    private var _entries: (repeat each E)
 
-    public func getName() -> String {
-        return name
+    public var entries: [DBusMember] {
+        var arr: [DBusMember] = []
+        for entry in repeat each _entries {
+            arr.append(entry)
+        }
+        return arr
+    }
+
+    public var members: [DBusMember] {
+        self.entries
     }
 
     public init(
@@ -57,13 +83,13 @@ public struct DBusEntryInterface<each E: DBusEntry>: DBusInterfaceProtocol {
         @DBusEntryBuilder _ entries: () -> (repeat each E)
     ) {
         self.name = name
-        self.entries = entries()
+        _entries = entries()
     }
 }
 
 @resultBuilder
 public struct DBusEntryBuilder {
-    public static func buildBlock<each Entry: DBusEntry>(
+    public static func buildBlock<each Entry: DBusMember>(
         _ entry: repeat each Entry
     ) -> (repeat each Entry) {
         (repeat each entry)
@@ -79,17 +105,16 @@ public struct DBusInterfaceBuilder {
     }
 }
 
-public protocol DBusEntry {}
+public protocol DBusMember {}
 
-public struct DBusMethod: DBusEntry {
+public struct DBusMethod: DBusMember {
     public struct Argument {
-        public enum Direction {
-            case `in`
-            case out
-        }
+        public var name: String
+        public var type: DBusType
 
         public init(_ name: String, _ type: DBusType) {
-            //
+            self.name = name
+            self.type = type
         }
 
         public static func argument(
@@ -133,11 +158,11 @@ public struct DBusMethod: DBusEntry {
     }
 }
 
-// public struct DBusStart: DBusEntry {
+// public struct DBusStart: DBusMember {
 //     //
 // }
 
-public struct DBusEmptyEntry: DBusEntry {
+public struct DBusEmptyEntry: DBusMember {
     // public var entry: Never {}
 }
 
@@ -145,7 +170,7 @@ public struct DBusEmptyEntry: DBusEntry {
 // TODO: REMOVE. This is for an editor error check. Must be removed.
 internal enum GrammarTest {
     static func test() {
-        let path: some DBusPathProtocol = DBusEntryPath("/org/example/Test") {
+        let path: some DBusPathProtocol = DBusPath("/org/example/Test") {
             DBusEntryInterface(name: "org.example.Test") {
                 DBusMethod(name: "SayHello", in: "", out: "s")
                 DBusMethod(name: "SayGoodbye", in: "", out: "s")

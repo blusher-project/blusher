@@ -29,6 +29,10 @@ public class DBusConnection {
         _name
     }
 
+    public var fd: CInt {
+        sd_bus_get_fd(_busPtr)
+    }
+
     //=================
     // Public Inits
     //=================
@@ -167,8 +171,65 @@ public class DBusConnection {
         _objects.append(object)
     }
 
-    public func registerEntry(_ entry: some DBusPathProtocol) {
-        let count = entry.count
+    public func registerPath(_ path: some DBusPathProtocol) {
+        let callback = { msg, userData, error in
+            let message = DBusMessage(cPointer: msg!)
+            print(message.path ?? "NoPath")
+
+            if let userData = userData {
+                let conn = Unmanaged<DBusConnection>.fromOpaque(userData).takeUnretainedValue()
+
+                conn.replyMethodReturn(message)
+            }
+
+            return 1
+        } as SdBusMessageHandler
+        let userData = Unmanaged.passUnretained(self).toOpaque()
+        sd_bus_add_object(_busPtr,
+            nil,
+            path.value,
+            callback,
+            userData
+        )
+    }
+
+    public func replyMethodReturn(_ message: DBusMessage) {
+        let _ = withVaList([42]) { va in
+            sd_bus_reply_method_returnv(message.cPointer, "i", va)
+        }
+    }
+
+    public func process() -> DBusMessage {
+        var msg: OpaquePointer? = nil
+        let err = sd_bus_process(_busPtr, &msg)
+        print("err: \(err)")
+        var errStr = ""
+        if err < 0 {
+            if err == -EINVAL {
+                errStr = "-EINVAL"
+            } else if err == -ECHILD {
+                errStr = "-ECHILD"
+            } else if err == -ENOTCONN {
+                errStr = "-ENOTCONN"
+            } else if err == -ECONNRESET {
+                errStr = "-ECONNRESET"
+            } else if err == -EBUSY {
+                errStr = "-EBUSY"
+            } else {
+                errStr = "..."
+            }
+            Logger.warn("sd_bus_process failed! \(errStr)")
+        }
+        if msg == nil {
+            return DBusMessage()
+        }
+        let message = DBusMessage(cPointer: msg!)
+
+        return message
+    }
+
+    public func wait() {
+        sd_bus_wait(_busPtr, UInt64.max)
     }
 }
 

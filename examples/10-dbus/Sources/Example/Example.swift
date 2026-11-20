@@ -20,9 +20,20 @@ public struct Program {
 
         // dbusConnection.addMethod("")
 
+        let rootPath = DBusPath("/") {
+            DBusEntryInterface(name: "org.freedesktop.DBus.Introspectable") {
+                DBusMethod(
+                    name: "Introspect",
+                    in: [],
+                    out: []
+                )
+            }
+        }
+        dbusConnection.registerPath(rootPath)
 
-        let path = DBusEntryPath("/org/example/Test") {
-            DBusEntryInterface(name: "org.example.Test") {
+
+        let path = DBusPath("/org/blusher/Example") {
+            DBusEntryInterface(name: "org.blusher.Example") {
                 DBusMethod(
                     name: "SayHello",
                     in: [ .argument(name: "name", type: .string) ],
@@ -37,9 +48,19 @@ public struct Program {
             // DBusEntryInterface(name: "org.example.Test.New") {
             // }
         }
+        dbusConnection.registerPath(path)
 
-        var count = 0
         print(path.count)
+        print(path.introspection)
+        print(dbusConnection.fd)
+
+        let _ = dbusConnection.process()
+        while true {
+            dbusConnection.wait()
+            let message = dbusConnection.process()
+            print(message.path ?? "No path")
+            print(message.type)
+        }
 
 
         let window = BWindow()

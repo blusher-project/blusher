@@ -17,6 +17,10 @@ public class DBusMessage {
     private var _interface: String? = nil
     private var _arguments: [DBusArgument] = []
 
+    internal var cPointer: OpaquePointer {
+        _msgPtr!
+    }
+
     public var type: DBusMessageType {
         _type
     }
@@ -67,6 +71,10 @@ public class DBusMessage {
         } else {
             Logger.warn("DBusMessage - Invalid type (\(type))")
             _type = .error
+        }
+
+        if let path = sd_bus_message_get_path(_msgPtr) {
+            _path = String(cString: path)
         }
     }
 
